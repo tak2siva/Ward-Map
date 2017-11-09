@@ -31,13 +31,11 @@ const styles = StyleSheet.create({
 export default class App extends Component<{}> {
   render() {
     const url = 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    const CustomImageView = requireNativeComponent('CustomImageView', {name: 'CustomImageView', propTypes: {...View.propTypes}});
     const MapView = requireNativeComponent('MapView', {name: 'MapView',propTypes:{...View.propTypes}})
 
     return(
       <View style={styles.container}>
         <Text> Hello </Text>
-        <CustomImageView style={styles.imageBox}/>
         <MapView style={styles.mapView} />
       </View>
     );
