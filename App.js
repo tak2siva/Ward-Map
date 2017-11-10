@@ -56,11 +56,6 @@ export default class App extends Component<{}> {
   }
 
   render() {
-    const url = 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    const onPressLocate = () => {
-
-    };
-
     return(
       <View style={styles.container}>
         <Text> Hello </Text>
