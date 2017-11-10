@@ -66,7 +66,7 @@ export default class App extends Component<{}> {
   }
 
   updateCurrentLocation() {
-    navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log("========= GPS reading ================");
         console.log(new GeoPoint(position.coords.latitude, position.coords.longitude));
@@ -75,9 +75,9 @@ export default class App extends Component<{}> {
         });
       },
       (error) => {
-        console.log("Error updating current location: " + error);
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
+        console.log("Error updating current location: ");
+        console.log(error);
+      }
     );
   }
 
