@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
 import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 public class OSMapView extends MapView {
@@ -45,5 +46,12 @@ public class OSMapView extends MapView {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public double getLatitude(){
+        return latitude;
+    }
+    public double getLongitude(){
+        return longitude;
     }
 }

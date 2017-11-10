@@ -11,12 +11,17 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.kml.KmlDocument;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.FolderOverlay;
+import org.osmdroid.views.overlay.Marker;
 
 import java.io.InputStream;
+import java.io.PipedReader;
 
 
 public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     public static final String REACT_CLASS = "OSMapView";
+    public static final double chennaiLatitude = 13.082680;
+    public static final double chennaiLongitude = 80.270718;
+
 
     @Override
     public String getName() {
@@ -32,21 +37,25 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     }
 
     private void setCenter(OSMapView mapView) {
+        setCenter(mapView, chennaiLatitude, chennaiLongitude);
+    }
+
+    private void setCenter(OSMapView mapView, double latitude, double longitude) {
+        System.out.println("------------------- Setting Center --------------------------");
+        GeoPoint startPoint = new GeoPoint(latitude, longitude);
         IMapController mapController = mapView.getController();
         mapController.setZoom(9);
-        GeoPoint startPoint = new GeoPoint(13.082680, 80.270718);
-        System.out.println("------------------- Settin Center --------------------------");
         mapController.setCenter(startPoint);
     }
 
-    public OSMapView createMapView(ThemedReactContext reactContext) {
+    private OSMapView createMapView(ThemedReactContext reactContext) {
         OSMapView mapView = new OSMapView(reactContext);
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
         return mapView;
     }
 
-    public void addKMLOverLay(OSMapView mapView, ThemedReactContext reactContext) {
+    private void addKMLOverLay(OSMapView mapView, ThemedReactContext reactContext) {
         Resources resources = reactContext.getResources();
         InputStream kmlInputStream = resources.openRawResource(R.raw.chennai_wards);
 
@@ -77,11 +86,34 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
         mapView.setLongitude(longitude);
     }
 
+
+    @ReactProp(name = "enableMarker")
+    public void setEnableMarker(OSMapView mapView, boolean enableMarker) {
+        System.out.println("========IN set Enable Marker+++++++++++++++++++");
+        mapView.setEnableMarker(enableMarker);
+        Marker marker = createMarker(mapView);
+        mapView.getOverlays().add(marker);
+        setCenter(mapView, mapView.latitude, mapView.longitude);
+    }
+
+    private Marker createMarker(OSMapView mapView) {
+        System.out.println("========= Creating marker=========");
+        System.out.println("========"+mapView.latitude+"======"+mapView.longitude);
+        GeoPoint geoPoint = new GeoPoint(mapView.latitude, mapView.longitude);
+        Marker marker = new Marker(mapView);
+        marker.setPosition(geoPoint);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        return marker;
+    }
+
     @ReactProp(name = "randomKey")
     public void setRandomKey(OSMapView mapView, double value) {
+        System.out.println("==========called set random==============");
         IMapController mapController = mapView.getController();
         GeoPoint geoPoint = new GeoPoint(mapView.latitude, mapView.longitude);
         mapController.setCenter(geoPoint);
+        mapController.setZoom(14);
+        setEnableMarker(mapView, true);
     }
 
 }

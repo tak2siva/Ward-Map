@@ -42,6 +42,13 @@ const MapView = requireNativeComponent('OSMapView', {
       }
 });
 
+var options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0
+};
+
+ 
 export default class App extends Component<{}> {
   constructor(props) {
     super(props);
@@ -51,8 +58,25 @@ export default class App extends Component<{}> {
     }
   }
 
+  updateCurrentLocation() {
+    navigator.geolocation.watchPosition(
+      (position) => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+      },
+      (error) => {
+        console.log("Error updating current location: " + error);
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
+    );
+  }
+
   onClickLocate() {
-    this.setState({latitude: 11.016844, longitude: 76.955832, randomKey: Math.random()});
+    this.updateCurrentLocation();
+    this.setState({randomKey: Math.random(),enableMarker: true});
   }
 
   render() {
@@ -63,6 +87,7 @@ export default class App extends Component<{}> {
           latitude={this.state.latitude}
           longitude={this.state.longitude}
           randomKey={Math.random()}
+          enableMarker={true}
           style={styles.mapView} 
         />
         <Button 
