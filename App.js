@@ -36,35 +36,42 @@ const MapView = requireNativeComponent('OSMapView', {
         latitude: PropTypes.number,
         longitude: PropTypes.number,
         enableMarker: PropTypes.bool,
-        centerCoordinate: PropTypes.object,
+        userLocation: PropTypes.object,
         randomKey: PropTypes.number, // Hack to call java method with view instance
         ...View.propTypes
       }
 });
 
-var options = {
+const options = {
   enableHighAccuracy: true,
   timeout: 5000,
   maximumAge: 0
 };
 
+class GeoPoint {
+  constructor(latitude, longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
+}
+
+const chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
  
 export default class App extends Component<{}> {
   constructor(props) {
     super(props);
-    this.state = { 
-      latitude: 13.082680,
-      longitude: 80.270718
+    this.state = {
+      userLocation: chennaiGeoPoint
     }
   }
 
   updateCurrentLocation() {
     navigator.geolocation.watchPosition(
       (position) => {
+        console.log("========= GPS reading ================");
+        console.log(new GeoPoint(position.coords.latitude, position.coords.longitude));
         this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          error: null,
+          userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
         });
       },
       (error) => {
@@ -84,15 +91,17 @@ export default class App extends Component<{}> {
       <View style={styles.container}>
         <Text> Hello </Text>
         <MapView 
-          latitude={this.state.latitude}
-          longitude={this.state.longitude}
           randomKey={Math.random()}
           enableMarker={true}
-          style={styles.mapView} 
+          userLocation={this.state.userLocation}
+          style={styles.mapView}
         />
         <Button 
           onPress={this.onClickLocate.bind(this)}
           title='Locate Me'/>
+        <Text>
+          {JSON.stringify(this.state)}
+        </Text>  
       </View>
     );
   }

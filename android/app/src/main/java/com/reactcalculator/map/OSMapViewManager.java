@@ -2,6 +2,7 @@ package com.reactcalculator.map;
 
 import android.content.res.Resources;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -14,14 +15,11 @@ import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.Marker;
 
 import java.io.InputStream;
-import java.io.PipedReader;
 
 
 public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     public static final String REACT_CLASS = "OSMapView";
-    public static final double chennaiLatitude = 13.082680;
-    public static final double chennaiLongitude = 80.270718;
-
+    public static final GeoPoint chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
 
     @Override
     public String getName() {
@@ -36,16 +34,51 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
         return mapView;
     }
 
-    private void setCenter(OSMapView mapView) {
-        setCenter(mapView, chennaiLatitude, chennaiLongitude);
+    @ReactProp(name = "enableMarker")
+    public void setEnableMarker(OSMapView mapView, boolean enableMarker) {
+        System.out.println("========IN set Enable Marker+++++++++++++++++++");
+        mapView.setEnableMarker(enableMarker);
+
+        deleteExistingMarker(mapView);
+
+        if (enableMarker) {
+            createMarker(mapView);
+            setCenter(mapView, mapView.getUserLocation());
+        }
     }
 
-    private void setCenter(OSMapView mapView, double latitude, double longitude) {
+    @ReactProp(name = "randomKey")
+    public void setRandomKey(OSMapView mapView, double value) {
+        System.out.println("==========called set random==============");
+        IMapController mapController = mapView.getController();
+        mapController.setCenter(mapView.getUserLocation());
+        mapController.setZoom(14);
+        setEnableMarker(mapView, true);
+    }
+
+    @ReactProp(name = "userLocation")
+    public void setUserLocation(OSMapView mapView, ReadableMap value) {
+        System.out.println("==========set user location==============");
+        try {
+            double latitude = value.getDouble("latitude");
+            double longitude = value.getDouble("longitude");
+            GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+            mapView.setUserLocation(geoPoint);
+            System.out.println(geoPoint);
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating user location", e);
+        }
+    }
+
+    private void setCenter(OSMapView mapView) {
+        setCenter(mapView, chennaiGeoPoint);
+    }
+
+    private void setCenter(OSMapView mapView, GeoPoint geoPoint) {
         System.out.println("------------------- Setting Center --------------------------");
-        GeoPoint startPoint = new GeoPoint(latitude, longitude);
         IMapController mapController = mapView.getController();
         mapController.setZoom(9);
-        mapController.setCenter(startPoint);
+        mapController.setCenter(geoPoint);
     }
 
     private OSMapView createMapView(ThemedReactContext reactContext) {
@@ -66,54 +99,20 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
         mapView.invalidate();
     }
 
-    @ReactProp(name = "latitude")
-    public void setLatitude(OSMapView mapView, double latitude) {
-        System.out.println("------------ Updating lat -----------------------------");
-        System.out.println(latitude);
-        IMapController mapController = mapView.getController();
-        GeoPoint geoPoint = new GeoPoint(latitude, mapView.longitude);
-        mapController.setCenter(geoPoint);
-        mapView.setLatitude(latitude);
+    private void deleteExistingMarker(OSMapView mapView) {
+        Marker currentLocationMarker = mapView.getUserLocationMarker();
+        if (currentLocationMarker != null) {
+            mapView.getOverlays().remove(currentLocationMarker);
+        }
     }
 
-    @ReactProp(name = "longitude")
-    public void setLongitude(OSMapView mapView, double longitude) {
-        System.out.println("------------ Updating long -----------------------------");
-        System.out.println(longitude);
-        IMapController mapController = mapView.getController();
-        GeoPoint geoPoint = new GeoPoint(mapView.latitude, longitude);
-        mapController.setCenter(geoPoint);
-        mapView.setLongitude(longitude);
-    }
-
-
-    @ReactProp(name = "enableMarker")
-    public void setEnableMarker(OSMapView mapView, boolean enableMarker) {
-        System.out.println("========IN set Enable Marker+++++++++++++++++++");
-        mapView.setEnableMarker(enableMarker);
-        Marker marker = createMarker(mapView);
-        mapView.getOverlays().add(marker);
-        setCenter(mapView, mapView.latitude, mapView.longitude);
-    }
-
-    private Marker createMarker(OSMapView mapView) {
+    private void createMarker(OSMapView mapView) {
         System.out.println("========= Creating marker=========");
-        System.out.println("========"+mapView.latitude+"======"+mapView.longitude);
-        GeoPoint geoPoint = new GeoPoint(mapView.latitude, mapView.longitude);
+        System.out.println(mapView.getUserLocation());
         Marker marker = new Marker(mapView);
-        marker.setPosition(geoPoint);
+        marker.setPosition(mapView.getUserLocation());
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        return marker;
+        mapView.getOverlays().add(marker);
+        mapView.setUserLocationMarker(marker);
     }
-
-    @ReactProp(name = "randomKey")
-    public void setRandomKey(OSMapView mapView, double value) {
-        System.out.println("==========called set random==============");
-        IMapController mapController = mapView.getController();
-        GeoPoint geoPoint = new GeoPoint(mapView.latitude, mapView.longitude);
-        mapController.setCenter(geoPoint);
-        mapController.setZoom(14);
-        setEnableMarker(mapView, true);
-    }
-
 }

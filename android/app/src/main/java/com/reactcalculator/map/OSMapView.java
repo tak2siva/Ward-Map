@@ -6,11 +6,12 @@ import android.util.AttributeSet;
 import org.osmdroid.tileprovider.MapTileProviderBase;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 
 public class OSMapView extends MapView {
-    double latitude;
-    double longitude;
-    boolean enableMarker;
+    private boolean enableMarker;
+    private GeoPoint userLocation;
+    private Marker userLocationMarker;
 
     public OSMapView(Context context, MapTileProviderBase tileProvider, Handler tileRequestCompleteHandler, AttributeSet attrs) {
         super(context, tileProvider, tileRequestCompleteHandler, attrs);
@@ -36,22 +37,23 @@ public class OSMapView extends MapView {
         super(context, aTileProvider, tileRequestCompleteHandler);
     }
 
+    public GeoPoint getUserLocation() {
+        return this.userLocation;
+    }
+
+    public Marker getUserLocationMarker() {
+        return this.userLocationMarker;
+    }
+
     public void setEnableMarker(boolean enableMarker) {
         this.enableMarker = enableMarker;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setUserLocation(GeoPoint geoPoint) {
+        this.userLocation = geoPoint;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getLatitude(){
-        return latitude;
-    }
-    public double getLongitude(){
-        return longitude;
+    public void setUserLocationMarker(Marker marker) {
+        this.userLocationMarker = marker;
     }
 }
