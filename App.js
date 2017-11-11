@@ -77,7 +77,8 @@ export default class App extends Component<{}> {
       (error) => {
         console.log("Error updating current location: ");
         console.log(error);
-      }
+      },
+      {maximumAge: 0, timeout: 20000}
     );
   }
 

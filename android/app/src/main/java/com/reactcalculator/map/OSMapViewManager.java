@@ -77,7 +77,7 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     private void setCenter(OSMapView mapView, GeoPoint geoPoint) {
         System.out.println("------------------- Setting Center --------------------------");
         IMapController mapController = mapView.getController();
-        mapController.setZoom(9);
+        mapController.setZoom(15);
         mapController.setCenter(geoPoint);
     }
 
