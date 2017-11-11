@@ -16,11 +16,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React Native!"
 
-@interface ReactCalculatorTests : XCTestCase
+@interface WardMapTests : XCTestCase
 
 @end
 
-@implementation ReactCalculatorTests
+@implementation WardMapTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {

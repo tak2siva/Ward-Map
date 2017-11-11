@@ -1,4 +1,4 @@
-package com.reactcalculator.map;
+package com.wardmap.map;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

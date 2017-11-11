@@ -1,4 +1,4 @@
-package com.reactcalculator.map;
+package com.wardmap.map;
 
 import android.content.res.Resources;
 
@@ -6,7 +6,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.reactcalculator.R;
+import com.wardmap.R;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.kml.KmlDocument;

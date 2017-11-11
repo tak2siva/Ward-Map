@@ -1,4 +1,4 @@
-package com.reactcalculator.map;
+package com.wardmap.map;
 
 import android.content.Context;
 import android.os.Handler;
