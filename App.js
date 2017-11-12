@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Realm from 'realm';
 import {
   Platform,
   Dimensions,
@@ -87,7 +88,68 @@ export default class App extends Component<{}> {
     this.setState({randomKey: Math.random(),enableMarker: true});
   }
 
+  importCSVData() {
+    const CsvImportSchema = {
+      name: 'CsvImport',
+      primaryKey: 'version',
+      properties: {
+        version: 'string',
+        imported: {type: 'bool', default: false}
+      }
+    }
+
+    const WardInfoSchema = {
+      name: 'WardInfo',
+      primaryKey: 'wardNo',
+      properties: {
+        wardNo: 'int',
+        zoneNo: 'string',
+        zoneName: 'string',
+        zonalOfficeAddress: 'string',
+        zonalOfficerEmail: 'string',
+        zonalOfficerLandLine: 'string',
+        zonalOfficerMobile: 'string'
+      }
+    }
+
+    Realm.open({schema: [CsvImportSchema, WardInfoSchema]})
+      .then(realm => {
+        let meta = realm.objects('CsvImport').filtered('version = "v1"');
+        if (meta && meta['0'] && meta['0'].imported) {
+          console.log("================= Skipping Import ====================");
+          return;
+        }
+
+        const WardMapV1 = require('./react_assets/chennai_ward_map_v1.json');
+        console.log("============= Importing CSV ====================================")
+        for (let row of WardMapV1) {
+          try {
+            
+            console.log(row);
+            realm.write(() => {
+              realm.create('WardInfo', {
+                wardNo: Number.parseInt(row[0]), 
+                zoneNo: row[1], 
+                zoneName: row[2], 
+                zonalOfficeAddress: row[3], 
+                zonalOfficerEmail: row[4],
+                zonalOfficerLandLine: row[5],
+                zonalOfficerMobile: row[6]
+              });
+            });
+          } catch(e) {
+            console.log('error on importing csv');
+            console.log(row);
+            console.log(e);
+          }
+        }
+        console.log("========= Import Success ============");
+        realm.create('CsvImport', {version: 'v1', imported: true});
+      });
+  }
+
   render() {
+    this.importCSVData();
     return(
       <View style={styles.container}>
         <Text> Hello </Text>

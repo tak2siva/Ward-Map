@@ -27,8 +27,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new RealmReactPackage(),
-            new MapsPackage(),
-              new OSMapPackage()
+              new MapsPackage(),
+                new OSMapPackage()
       );
     }
 
