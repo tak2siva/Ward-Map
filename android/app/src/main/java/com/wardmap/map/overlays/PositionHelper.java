@@ -15,7 +15,12 @@ public class PositionHelper {
     public void setCenter(OSMapView mapView, GeoPoint geoPoint) {
         System.out.println("------------------- Setting Center --------------------------");
         IMapController mapController = mapView.getController();
-        mapController.setZoom(15);
+//        mapController.setZoom(15);
         mapController.setCenter(geoPoint);
+    }
+
+    public void setZoom(OSMapView mapView, int zoom) {
+        IMapController mapController = mapView.getController();
+        mapController.setZoom(zoom);
     }
 }

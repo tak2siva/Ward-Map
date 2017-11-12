@@ -45,6 +45,9 @@ public class OSMapView extends MapView {
         return this.userLocationMarker;
     }
 
+    public boolean getEnableMarker() {
+        return this.enableMarker;
+    }
     public void setEnableMarker(boolean enableMarker) {
         this.enableMarker = enableMarker;
     }

@@ -58,6 +58,9 @@ class GeoPoint {
 }
 
 const chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
+const Events = {
+  MAP_LONG_PRESS_EVENT: 'MAP_LONG_PRESS_EVENT'
+}
  
 export default class App extends Component<{}> {
   constructor(props) {
@@ -66,8 +69,15 @@ export default class App extends Component<{}> {
       userLocation: chennaiGeoPoint
     }
 
-    DeviceEventEmitter.addListener('testEvent',  function(e: Event) {
+    let that = this;
+
+    DeviceEventEmitter.addListener('MAP_LONG_PRESS_EVENT',  function(e: Event) {
       console.log(e);
+      that.setState({
+        randomKey: Math.random(),
+        enableMarker: true,
+        userLocation: new GeoPoint(e.latitude, e.longitude)
+      });
     });
   }
 

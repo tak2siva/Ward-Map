@@ -19,7 +19,7 @@ import org.osmdroid.util.GeoPoint;
 public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     private static final String REACT_CLASS = "OSMapView";
 
-    private JSEventBus eventEmitter = new JSEventBus();
+    private JSEventBus jsEventBus;
     private KMLOverlay kmlOverlay = new KMLOverlay();
     private MarkerOverlay markerOverlay = new MarkerOverlay();
     private PositionHelper positionHelper = new PositionHelper();
@@ -32,21 +32,23 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
 
     @Override
     protected OSMapView createViewInstance(ThemedReactContext reactContext) {
+        jsEventBus = new JSEventBus(reactContext);
         OSMapView mapView = createMapView(reactContext);
+
         kmlOverlay.draw(mapView, reactContext);
         markerOverlay.createMarker(mapView);
         positionHelper.setDefaultCenter(mapView);
-        eventsOverlay.initEventReceiver(mapView, reactContext);
-
-        WritableMap map = Arguments.createMap();
-        map.putString("foo", "bar");
-        eventEmitter.sendEvent(reactContext, "testEvent", map);
+        positionHelper.setZoom(mapView, 15);
+        eventsOverlay.initEventReceiver(mapView, reactContext, jsEventBus);
         return mapView;
     }
 
     @ReactProp(name = "enableMarker")
     public void setEnableMarker(OSMapView mapView, boolean enableMarker) {
         System.out.println("========IN set Enable Marker+++++++++++++++++++");
+        if (mapView.getEnableMarker() == enableMarker) {
+            return;
+        }
         mapView.setEnableMarker(enableMarker);
         markerOverlay.deleteExistingMarker(mapView);
 
