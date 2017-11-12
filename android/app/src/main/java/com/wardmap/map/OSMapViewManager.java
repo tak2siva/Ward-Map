@@ -1,25 +1,29 @@
 package com.wardmap.map;
 
-import android.content.res.Resources;
-
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.wardmap.R;
+import com.wardmap.JSEventBus;
+import com.wardmap.map.overlays.EventsOverlay;
+import com.wardmap.map.overlays.KMLOverlay;
+import com.wardmap.map.overlays.MarkerOverlay;
+import com.wardmap.map.overlays.PositionHelper;
 
 import org.osmdroid.api.IMapController;
-import org.osmdroid.bonuspack.kml.KmlDocument;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.FolderOverlay;
-import org.osmdroid.views.overlay.Marker;
-
-import java.io.InputStream;
 
 
 public class OSMapViewManager extends SimpleViewManager<OSMapView>{
-    public static final String REACT_CLASS = "OSMapView";
-    public static final GeoPoint chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
+    private static final String REACT_CLASS = "OSMapView";
+
+    private JSEventBus eventEmitter = new JSEventBus();
+    private KMLOverlay kmlOverlay = new KMLOverlay();
+    private MarkerOverlay markerOverlay = new MarkerOverlay();
+    private PositionHelper positionHelper = new PositionHelper();
+    private EventsOverlay eventsOverlay = new EventsOverlay();
 
     @Override
     public String getName() {
@@ -29,8 +33,14 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     @Override
     protected OSMapView createViewInstance(ThemedReactContext reactContext) {
         OSMapView mapView = createMapView(reactContext);
-        addKMLOverLay(mapView, reactContext);
-        setCenter(mapView);
+        kmlOverlay.draw(mapView, reactContext);
+        markerOverlay.createMarker(mapView);
+        positionHelper.setDefaultCenter(mapView);
+        eventsOverlay.initEventReceiver(mapView, reactContext);
+
+        WritableMap map = Arguments.createMap();
+        map.putString("foo", "bar");
+        eventEmitter.sendEvent(reactContext, "testEvent", map);
         return mapView;
     }
 
@@ -38,12 +48,11 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     public void setEnableMarker(OSMapView mapView, boolean enableMarker) {
         System.out.println("========IN set Enable Marker+++++++++++++++++++");
         mapView.setEnableMarker(enableMarker);
-
-        deleteExistingMarker(mapView);
+        markerOverlay.deleteExistingMarker(mapView);
 
         if (enableMarker) {
-            createMarker(mapView);
-            setCenter(mapView, mapView.getUserLocation());
+            markerOverlay.createMarker(mapView);
+            positionHelper.setCenter(mapView, mapView.getUserLocation());
         }
     }
 
@@ -70,49 +79,10 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
         }
     }
 
-    private void setCenter(OSMapView mapView) {
-        setCenter(mapView, chennaiGeoPoint);
-    }
-
-    private void setCenter(OSMapView mapView, GeoPoint geoPoint) {
-        System.out.println("------------------- Setting Center --------------------------");
-        IMapController mapController = mapView.getController();
-        mapController.setZoom(15);
-        mapController.setCenter(geoPoint);
-    }
-
     private OSMapView createMapView(ThemedReactContext reactContext) {
         OSMapView mapView = new OSMapView(reactContext);
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
         return mapView;
-    }
-
-    private void addKMLOverLay(OSMapView mapView, ThemedReactContext reactContext) {
-        Resources resources = reactContext.getResources();
-        InputStream kmlInputStream = resources.openRawResource(R.raw.chennai_wards);
-
-        KmlDocument kmlDocument = new KmlDocument();
-        kmlDocument.parseKMLStream(kmlInputStream, null);
-        FolderOverlay kmlOverlay = (FolderOverlay) kmlDocument.mKmlRoot.buildOverlay(mapView, null, null, kmlDocument);
-        mapView.getOverlays().add(kmlOverlay);
-        mapView.invalidate();
-    }
-
-    private void deleteExistingMarker(OSMapView mapView) {
-        Marker currentLocationMarker = mapView.getUserLocationMarker();
-        if (currentLocationMarker != null) {
-            mapView.getOverlays().remove(currentLocationMarker);
-        }
-    }
-
-    private void createMarker(OSMapView mapView) {
-        System.out.println("========= Creating marker=========");
-        System.out.println(mapView.getUserLocation());
-        Marker marker = new Marker(mapView);
-        marker.setPosition(mapView.getUserLocation());
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        mapView.getOverlays().add(marker);
-        mapView.setUserLocationMarker(marker);
     }
 }

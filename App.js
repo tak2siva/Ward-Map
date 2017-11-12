@@ -8,7 +8,8 @@ import {
   Text,
   View,
   Button,
-  requireNativeComponent
+  requireNativeComponent,
+  DeviceEventEmitter
 } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -64,6 +65,10 @@ export default class App extends Component<{}> {
     this.state = {
       userLocation: chennaiGeoPoint
     }
+
+    DeviceEventEmitter.addListener('testEvent',  function(e: Event) {
+      console.log(e);
+    });
   }
 
   updateCurrentLocation() {
