@@ -20,7 +20,7 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     private static final String REACT_CLASS = "OSMapView";
 
     private JSEventBus jsEventBus;
-    private KMLOverlay kmlOverlay = new KMLOverlay();
+    private KMLOverlay kmlOverlay;
     private MarkerOverlay markerOverlay = new MarkerOverlay();
     private PositionHelper positionHelper = new PositionHelper();
     private EventsOverlay eventsOverlay = new EventsOverlay();
@@ -33,6 +33,8 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     @Override
     protected OSMapView createViewInstance(ThemedReactContext reactContext) {
         jsEventBus = new JSEventBus(reactContext);
+        kmlOverlay = new KMLOverlay(reactContext, markerOverlay);
+
         OSMapView mapView = createMapView(reactContext);
 
         kmlOverlay.draw(mapView, reactContext);
