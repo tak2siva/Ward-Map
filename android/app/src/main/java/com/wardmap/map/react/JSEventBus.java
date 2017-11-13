@@ -1,4 +1,4 @@
-package com.wardmap;
+package com.wardmap.map.react;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
@@ -15,7 +15,7 @@ public class JSEventBus {
 
     public void sendEvent(ReactContext reactContext,
                           String eventName, @Nullable WritableMap params) {
-        reactContext
+        this.reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
     }

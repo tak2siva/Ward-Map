@@ -1,6 +1,6 @@
 package com.wardmap.map.overlays;
 
-import com.wardmap.map.OSMapView;
+import com.wardmap.map.components.OSMapView;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;

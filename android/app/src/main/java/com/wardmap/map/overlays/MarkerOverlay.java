@@ -1,6 +1,7 @@
 package com.wardmap.map.overlays;
 
-import com.wardmap.map.OSMapView;
+import com.wardmap.map.components.MarkerWithLabel;
+import com.wardmap.map.components.OSMapView;
 
 import org.osmdroid.views.overlay.Marker;
 
@@ -13,7 +14,7 @@ public class MarkerOverlay {
             return;
         }
 
-        Marker marker = new Marker(mapView);
+        Marker marker = new MarkerWithLabel(mapView, "Chennai Label");
         marker.setPosition(mapView.getUserLocation());
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         mapView.getOverlays().add(marker);

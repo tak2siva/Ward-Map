@@ -4,7 +4,7 @@ import android.content.res.Resources;
 
 import com.facebook.react.bridge.ReactContext;
 import com.wardmap.R;
-import com.wardmap.map.OSMapView;
+import com.wardmap.map.components.OSMapView;
 
 import org.osmdroid.bonuspack.kml.KmlDocument;
 import org.osmdroid.views.overlay.FolderOverlay;

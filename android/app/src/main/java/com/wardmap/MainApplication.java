@@ -9,7 +9,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.wardmap.map.OSMapPackage;
+import com.wardmap.map.react.OSMapPackage;
 
 import java.util.Arrays;
 import java.util.List;

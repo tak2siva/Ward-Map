@@ -3,8 +3,8 @@ package com.wardmap.map.overlays;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.wardmap.JSEventBus;
-import com.wardmap.map.OSMapView;
+import com.wardmap.map.react.JSEventBus;
+import com.wardmap.map.components.OSMapView;
 
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;

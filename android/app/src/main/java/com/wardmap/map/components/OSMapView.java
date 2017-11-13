@@ -1,4 +1,4 @@
-package com.wardmap.map;
+package com.wardmap.map.components;
 
 import android.content.Context;
 import android.os.Handler;

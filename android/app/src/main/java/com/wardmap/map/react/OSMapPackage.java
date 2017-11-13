@@ -1,4 +1,4 @@
-package com.wardmap.map;
+package com.wardmap.map.react;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
