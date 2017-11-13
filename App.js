@@ -154,12 +154,19 @@ export default class App extends Component<{}> {
             });
           } catch(e) {
             console.log('error on importing csv');
-            console.log(row);
             console.log(e);
           }
         }
         console.log("========= Import Success ============");
-        realm.create('CsvImport', {version: 'v1', imported: true});
+        try {
+          realm.write(() => {
+            realm.create('CsvImport', {version: 'v1', imported: true});  
+          });
+        } catch(e) {
+          console.log('error on saving import log');
+          console.log(e);
+        }
+        
       });
   }
 

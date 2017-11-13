@@ -12,6 +12,7 @@ public class MarkerOverlay {
             System.out.println("User location is null");
             return;
         }
+
         Marker marker = new Marker(mapView);
         marker.setPosition(mapView.getUserLocation());
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
@@ -24,5 +25,10 @@ public class MarkerOverlay {
         if (currentLocationMarker != null) {
             mapView.getOverlays().remove(currentLocationMarker);
         }
+    }
+
+    public void resetMarker(OSMapView mapView) {
+        deleteExistingMarker(mapView);
+        createMarker(mapView);
     }
 }

@@ -1,8 +1,6 @@
 package com.wardmap.map;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -50,11 +48,12 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
             return;
         }
         mapView.setEnableMarker(enableMarker);
-        markerOverlay.deleteExistingMarker(mapView);
 
         if (enableMarker) {
-            markerOverlay.createMarker(mapView);
+            markerOverlay.resetMarker(mapView);
             positionHelper.setCenter(mapView, mapView.getUserLocation());
+        } else {
+            markerOverlay.deleteExistingMarker(mapView);
         }
     }
 
@@ -75,6 +74,7 @@ public class OSMapViewManager extends SimpleViewManager<OSMapView>{
             double longitude = value.getDouble("longitude");
             GeoPoint geoPoint = new GeoPoint(latitude, longitude);
             mapView.setUserLocation(geoPoint);
+            markerOverlay.createMarker(mapView);
             System.out.println(geoPoint);
         } catch (Exception e) {
             throw new RuntimeException("Error updating user location", e);
