@@ -13,6 +13,8 @@ import com.wardmap.map.overlays.PositionHelper;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
 
+// React Native Config for Native UI Component
+// https://facebook.github.io/react-native/docs/native-components-android.html
 
 public class OSMapViewManager extends SimpleViewManager<OSMapView>{
     private static final String REACT_CLASS = "OSMapView";

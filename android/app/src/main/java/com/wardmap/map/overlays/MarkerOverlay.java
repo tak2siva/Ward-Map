@@ -5,6 +5,8 @@ import com.wardmap.map.components.OSMapView;
 
 import org.osmdroid.views.overlay.Marker;
 
+// To add marker for a given Geopoint
+
 public class MarkerOverlay {
     public void createMarker(OSMapView mapView) {
         System.out.println("========= Creating marker=========");

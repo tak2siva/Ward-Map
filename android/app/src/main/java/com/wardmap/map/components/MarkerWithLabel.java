@@ -8,6 +8,8 @@ import android.graphics.Point;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
+// Marker Component with label support
+
 public class MarkerWithLabel extends Marker {
     Paint textPaint = null;
     String mLabel = null;

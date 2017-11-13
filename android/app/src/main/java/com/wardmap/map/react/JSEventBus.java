@@ -6,6 +6,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import javax.annotation.Nullable;
 
+// Send event to javascript code
+
 public class JSEventBus {
     private final ReactContext reactContext;
 

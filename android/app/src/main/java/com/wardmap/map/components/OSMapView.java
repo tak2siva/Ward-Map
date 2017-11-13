@@ -8,6 +8,10 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
+// Extension of MapView Component
+// to store user location and marker component
+// so it can be updated / removed at will
+
 public class OSMapView extends MapView {
     private boolean enableMarker;
     private GeoPoint userLocation;

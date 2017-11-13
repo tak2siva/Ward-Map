@@ -5,6 +5,8 @@ import com.wardmap.map.components.OSMapView;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
 
+// Helper to change map focus / center
+
 public class PositionHelper {
     private static final GeoPoint chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
 

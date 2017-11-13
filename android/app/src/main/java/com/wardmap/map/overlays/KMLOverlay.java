@@ -11,6 +11,8 @@ import org.osmdroid.views.overlay.FolderOverlay;
 
 import java.io.InputStream;
 
+// Draw polygons based on kml document
+
 public class KMLOverlay{
     public void draw(OSMapView mapView, ReactContext reactContext) {
         Resources resources = reactContext.getResources();

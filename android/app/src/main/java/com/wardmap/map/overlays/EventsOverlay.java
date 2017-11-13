@@ -10,6 +10,8 @@ import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 
+// An Overlay to capture click events on map
+
 public class EventsOverlay {
     public static final String MapLongPressEvent = "MAP_LONG_PRESS_EVENT";
 
