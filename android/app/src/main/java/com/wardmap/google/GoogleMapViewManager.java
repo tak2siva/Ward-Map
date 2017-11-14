@@ -8,20 +8,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.maps.android.PolyUtil;
-import com.google.maps.android.data.Feature;
-import com.google.maps.android.data.Geometry;
 import com.google.maps.android.data.kml.KmlContainer;
 import com.google.maps.android.data.kml.KmlLayer;
 import com.google.maps.android.data.kml.KmlPlacemark;
 import com.google.maps.android.data.kml.KmlPolygon;
 import com.wardmap.R;
+import com.wardmap.map.react.JSEventBus;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GoogleMapViewManager extends SimpleViewManager<MapView>
@@ -29,6 +29,8 @@ public class GoogleMapViewManager extends SimpleViewManager<MapView>
 
     private MapView mapView;
     private ThemedReactContext reactContext;
+    private JSEventBus jsEventBus;
+    private List<Marker> markersContainer = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -38,6 +40,7 @@ public class GoogleMapViewManager extends SimpleViewManager<MapView>
     @Override
     protected MapView createViewInstance(ThemedReactContext reactContext) {
         mapView = new MapView(reactContext);
+        jsEventBus = new JSEventBus(reactContext);
         this.reactContext = reactContext;
         mapView.getMapAsync(this);
         mapView.onCreate(null);
@@ -80,12 +83,22 @@ public class GoogleMapViewManager extends SimpleViewManager<MapView>
                         for (List<LatLng> obj : geometryObjects) {
                             boolean contians = PolyUtil.containsLocation(latLng, obj, true);
                             if(contians) {
+                                for (Marker m : markersContainer) {
+                                    m.remove();
+                                }
+                                markersContainer.clear();
+
                                 System.out.println("Clicked " + kmlPlacemark.getProperty("name"));
-                                googleMap.addMarker(new MarkerOptions()
+                                MarkerOptions markerOptions = new MarkerOptions()
                                         .position(latLng)
                                         .title(kmlPlacemark.getProperty("name"))
-                                        .snippet(kmlPlacemark.getProperty("ZONE_NAME")));
+                                        .snippet(kmlPlacemark.getProperty("ZONE_NAME"));
 
+                                Marker locationMarker = googleMap.addMarker(markerOptions);
+                                locationMarker.showInfoWindow();
+                                markersContainer.add(locationMarker);
+
+                                jsEventBus.sendEvent("ClickMarker", kmlPlacemark.getProperty("name"));
                             }
                         }
                     }

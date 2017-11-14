@@ -131,7 +131,7 @@ export default class App extends Component<{}> {
         <Button 
           onPress={this.onClickLocate.bind(this)}
           title='Locate Me'/>
-        <View styles={styles.small_ward_info_tile}>
+        <View style={styles.small_ward_info_tile}>
           <Text> Ward No : {wardNo} </Text>
           <Text> Ward Name : {zoneName} </Text>
         </View>
