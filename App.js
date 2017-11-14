@@ -11,7 +11,9 @@ import {
   Text,
   View,
   Button,
+  Modal,
   requireNativeComponent,
+  TouchableHighlight,
   DeviceEventEmitter
 } from 'react-native';
 
@@ -82,6 +84,9 @@ export default class App extends Component<{}> {
     DataMigration.prototype.importCSVData();
   }
 
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
 
   updateCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
@@ -109,19 +114,71 @@ export default class App extends Component<{}> {
 
     var wardNo  = (this.state.wardInfo === undefined) ? 'No Ward info Available' : this.state.wardInfo[0].wardNo;
     var zoneName  = (this.state.wardInfo === undefined) ? 'No Zone info Available' : this.state.wardInfo[0].zoneName
+    var zoneNo = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zoneNo
+    var zonalOfficeAddress = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficeAddress
+    var zonalOfficerEmail = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficerEmail
+    var zonalOfficerLandLine = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficerLandLine
+    var zonalOfficerMobile = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficerMobile
 
     return(
       <View style={styles.container}>
-        <Text> Hello New </Text>
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          style={{marginTop:30}}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {alert("Modal has been closed.")}}
+          >
+
+          <View style={styles.closeModal}>
+            <TouchableHighlight onPress={() => {
+              this.setModalVisible(!this.state.modalVisible)
+            }}>
+            <Text style={styles.close}>✕</Text>
+            </TouchableHighlight>
+          </View>
+
+         <View style={{marginTop: 50}}>
+          <View>
+            <Text style={styles.wardInfoText}>wardNo : {wardNo}</Text>
+            <Text style={styles.wardInfoText}>zoneName : {zoneName}</Text>
+            <Text style={styles.wardInfoText}>zoneNo : {zoneNo}</Text>
+            <Text style={styles.wardInfoText}>zonalOfficeAddress : {zonalOfficeAddress}</Text>
+            <Text style={styles.wardInfoText}>zonalOfficerEmail : {zonalOfficerEmail}</Text>
+            <Text style={styles.wardInfoText}>zonalOfficerLandLine : {zonalOfficerLandLine}</Text>
+            <Text style={styles.wardInfoText}>zonalOfficerMobile: {zonalOfficerMobile}</Text>
+
+          </View>
+         </View>
+        </Modal>
+
+
+
+
         <GoogleMapView
           style={styles.mapView}
         />
-        <Button 
-          onPress={this.onClickLocate.bind(this)}
-          title='Locate Me'/>
         <View style={styles.small_ward_info_tile}>
-          <Text> Ward No : {wardNo} </Text>
-          <Text> Ward Name : {zoneName} </Text>
+          <Text style={styles.wardInfoText}> Ward No : {wardNo} </Text>
+          <Text style={styles.wardInfoText}> Ward Name : {zoneName} </Text>
+        </View>
+
+        <View style={styles.more_info_holder}>
+          
+          <TouchableHighlight onPress={() => {
+          this.setModalVisible(true)
+          }}>
+            <Text style={{fontSize: 15}}>
+              More Info
+            </Text>
+          </TouchableHighlight>
+
+          <View style={styles.locateMe}>
+            <Button 
+            onPress={this.onClickLocate.bind(this)}
+            title='Locate Me'/>
+          </View>
         </View>
       </View>
     );
