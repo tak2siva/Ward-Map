@@ -5,7 +5,6 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -16,6 +15,7 @@ import com.google.maps.android.data.kml.KmlLayer;
 import com.google.maps.android.data.kml.KmlPlacemark;
 import com.google.maps.android.data.kml.KmlPolygon;
 import com.wardmap.R;
+import com.wardmap.map.overlays.KMLOverlay;
 import com.wardmap.map.react.JSEventBus;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -24,13 +24,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GoogleMapViewManager extends SimpleViewManager<MapView>
+public class GoogleMapViewManager extends SimpleViewManager<GMapView>
         implements OnMapReadyCallback, LifecycleEventListener {
 
-    private MapView mapView;
+    private GMapView gMapView;
     private ThemedReactContext reactContext;
     private JSEventBus jsEventBus;
-    private List<Marker> markersContainer = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -38,40 +37,25 @@ public class GoogleMapViewManager extends SimpleViewManager<MapView>
     }
 
     @Override
-    protected MapView createViewInstance(ThemedReactContext reactContext) {
-        mapView = new MapView(reactContext);
+    protected GMapView createViewInstance(ThemedReactContext reactContext) {
+        gMapView = new GMapView(reactContext);
         jsEventBus = new JSEventBus(reactContext);
         this.reactContext = reactContext;
-        mapView.getMapAsync(this);
-        mapView.onCreate(null);
+        gMapView.getMapAsync(this);
+        gMapView.onCreate(null);
 
         reactContext.addLifecycleEventListener(this);
-        return mapView;
+        return gMapView;
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        KmlLayer layer = null;
         System.out.println("=============== Initialized google maps ===================");
+        gMapView.setGoogleMap(googleMap);
         googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(13.082680, 80.270718) , 14.0f) );
         googleMap.getUiSettings().setZoomControlsEnabled(true);
 
-        try {
-            layer = new KmlLayer(googleMap, R.raw.chennai_wards, reactContext);
-            layer.addLayerToMap();
-
-            for (KmlContainer container: layer.getContainers()) {
-                for (KmlPlacemark kmlPlacemark : container.getPlacemarks()) {
-                    System.out.println(kmlPlacemark.getProperty("name"));
-                }
-            }
-
-        } catch (XmlPullParserException | IOException e) {
-            e.printStackTrace();
-        }
-
-
-        final KmlLayer finalLayer = layer;
+        final KmlLayer finalLayer = createKmlLayer(googleMap);
 
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -81,23 +65,9 @@ public class GoogleMapViewManager extends SimpleViewManager<MapView>
                         KmlPolygon geometry = (KmlPolygon) kmlPlacemark.getGeometry();
                         List<List<LatLng>> geometryObjects = geometry.getGeometryObject();
                         for (List<LatLng> obj : geometryObjects) {
-                            boolean contians = PolyUtil.containsLocation(latLng, obj, true);
-                            if(contians) {
-                                for (Marker m : markersContainer) {
-                                    m.remove();
-                                }
-                                markersContainer.clear();
-
-                                System.out.println("Clicked " + kmlPlacemark.getProperty("name"));
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(latLng)
-                                        .title(kmlPlacemark.getProperty("name"))
-                                        .snippet(kmlPlacemark.getProperty("ZONE_NAME"));
-
-                                Marker locationMarker = googleMap.addMarker(markerOptions);
-                                locationMarker.showInfoWindow();
-                                markersContainer.add(locationMarker);
-
+                            boolean contains = PolyUtil.containsLocation(latLng, obj, true);
+                            if(contains) {
+                                resetMarker(latLng, kmlPlacemark);
                                 jsEventBus.sendEvent("ClickMarker", kmlPlacemark.getProperty("name"));
                             }
                         }
@@ -107,18 +77,47 @@ public class GoogleMapViewManager extends SimpleViewManager<MapView>
         });
     }
 
+    private void resetMarker(LatLng latLng, KmlPlacemark kmlPlacemark) {
+        for (Marker m : gMapView.getMarkers()) {
+            m.remove();
+        }
+
+        gMapView.getMarkers().clear();
+
+        System.out.println("Clicked " + kmlPlacemark.getProperty("name"));
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(latLng)
+                .title(kmlPlacemark.getProperty("name"))
+                .snippet(kmlPlacemark.getProperty("ZONE_NAME"));
+
+        Marker locationMarker = gMapView.getGoogleMap().addMarker(markerOptions);
+        locationMarker.showInfoWindow();
+        gMapView.getMarkers().add(locationMarker);
+    }
+
+    private KmlLayer createKmlLayer(GoogleMap googleMap) {
+        KmlLayer layer = null;
+        try {
+            layer = new KmlLayer(googleMap, R.raw.chennai_wards, reactContext);
+            layer.addLayerToMap();
+        } catch (XmlPullParserException | IOException e) {
+            e.printStackTrace();
+        }
+        return layer;
+    }
+
     @Override
     public void onHostResume() {
-        mapView.onResume();
+        gMapView.onResume();
     }
 
     @Override
     public void onHostPause() {
-        mapView.onPause();
+        gMapView.onPause();
     }
 
     @Override
     public void onHostDestroy() {
-        mapView.onDestroy();
+        gMapView.onDestroy();
     }
 }
