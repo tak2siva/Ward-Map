@@ -27,6 +27,17 @@ const MapView = requireNativeComponent('OSMapView', {
       }
 });
 
+const GoogleMapView = requireNativeComponent('GoogleMapView', {
+      name: 'GoogleMapView', 
+      propTypes: {
+        latitude: PropTypes.number,
+        longitude: PropTypes.number,
+        enableMarker: PropTypes.bool,
+        userLocation: PropTypes.object,
+        randomKey: PropTypes.number, // Hack to call java method with view instance
+        ...View.propTypes
+      }
+});
 
 const options = {
   enableHighAccuracy: true,
@@ -113,11 +124,8 @@ export default class App extends Component<{}> {
 
     return(
       <View style={styles.container}>
-        <Text> Hello </Text>
-        <MapView 
-          randomKey={Math.random()}
-          enableMarker={true}
-          userLocation={this.state.userLocation}
+        <Text> Hello New </Text>
+        <GoogleMapView
           style={styles.mapView}
         />
         <Button 
