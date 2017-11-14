@@ -44,6 +44,30 @@ const MapView = requireNativeComponent('OSMapView', {
       }
 });
 
+const CsvImportSchema = {
+      name: 'CsvImport',
+      primaryKey: 'version',
+      properties: {
+        version: 'string',
+        imported: {type: 'bool', default: false}
+      }
+    }
+
+const WardInfoSchema = {
+  name: 'WardInfo',
+  primaryKey: 'wardNo',
+  properties: {
+    wardNo: 'int',
+    zoneNo: 'string',
+    zoneName: 'string',
+    zonalOfficeAddress: 'string',
+    zonalOfficerEmail: 'string',
+    zonalOfficerLandLine: 'string',
+    zonalOfficerMobile: 'string'
+  }
+}
+
+
 const options = {
   enableHighAccuracy: true,
   timeout: 5000,
@@ -59,7 +83,8 @@ class GeoPoint {
 
 const chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
 const Events = {
-  MAP_LONG_PRESS_EVENT: 'MAP_LONG_PRESS_EVENT'
+  MAP_LONG_PRESS_EVENT: 'MAP_LONG_PRESS_EVENT',
+  ClickMarker: 'ClickMarker'
 }
  
 export default class App extends Component<{}> {
@@ -78,6 +103,19 @@ export default class App extends Component<{}> {
         enableMarker: true,
         userLocation: new GeoPoint(e.latitude, e.longitude)
       });
+    });
+
+    DeviceEventEmitter.addListener('ClickMarker',  function(e: Event) {
+      let wardNo = e.split(" ")[1];
+      let wards = null;
+      Realm.open({schema: [WardInfoSchema]})
+        .then(realm => {
+          wards = realm.objects('WardInfo').filtered('wardNo = '+ wardNo);
+            that.setState({
+              marker_info: e,
+              wardInfo: wards
+            });
+      });      
     });
   }
 
@@ -104,29 +142,6 @@ export default class App extends Component<{}> {
   }
 
   importCSVData() {
-    const CsvImportSchema = {
-      name: 'CsvImport',
-      primaryKey: 'version',
-      properties: {
-        version: 'string',
-        imported: {type: 'bool', default: false}
-      }
-    }
-
-    const WardInfoSchema = {
-      name: 'WardInfo',
-      primaryKey: 'wardNo',
-      properties: {
-        wardNo: 'int',
-        zoneNo: 'string',
-        zoneName: 'string',
-        zonalOfficeAddress: 'string',
-        zonalOfficerEmail: 'string',
-        zonalOfficerLandLine: 'string',
-        zonalOfficerMobile: 'string'
-      }
-    }
-
     Realm.open({schema: [CsvImportSchema, WardInfoSchema]})
       .then(realm => {
         let meta = realm.objects('CsvImport').filtered('version = "v1"');
@@ -171,7 +186,12 @@ export default class App extends Component<{}> {
   }
 
   render() {
+
     this.importCSVData();
+
+    var wardNo  = (this.state.wardInfo === undefined) ? 'No Ward info Available' : this.state.wardInfo[0].wardNo;
+    var zoneName  = (this.state.wardInfo === undefined) ? 'No Zone info Available' : this.state.wardInfo[0].zoneName
+
     return(
       <View style={styles.container}>
         <Text> Hello </Text>
@@ -184,9 +204,12 @@ export default class App extends Component<{}> {
         <Button 
           onPress={this.onClickLocate.bind(this)}
           title='Locate Me'/>
-        <Text>
-          {JSON.stringify(this.state)}
-        </Text>  
+         <View>
+              <Text> Ward No : {wardNo} </Text>
+              <Text> Ward Name : {zoneName} </Text>
+          </View>
+        
+
       </View>
     );
   }
