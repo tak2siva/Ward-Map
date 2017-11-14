@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Realm from 'realm';
 import DataMigration from './database/DataMigration'
 import {Schemas} from './database/schemas'
+import styles from './styles/appStyles';
 import {
   Platform,
   Dimensions,
@@ -13,26 +14,6 @@ import {
   requireNativeComponent,
   DeviceEventEmitter
 } from 'react-native';
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  imageBox: {
-    height: 200,
-    width: '100%',
-  },
-  mapView: {
-    height: '80%',
-    width: '100%',
-  }
-});
 
 const MapView = requireNativeComponent('OSMapView', {
       name: 'OSMapView', 
@@ -142,12 +123,10 @@ export default class App extends Component<{}> {
         <Button 
           onPress={this.onClickLocate.bind(this)}
           title='Locate Me'/>
-         <View>
-              <Text> Ward No : {wardNo} </Text>
-              <Text> Ward Name : {zoneName} </Text>
-          </View>
-        
-
+        <View styles={styles.small_ward_info_tile}>
+          <Text> Ward No : {wardNo} </Text>
+          <Text> Ward Name : {zoneName} </Text>
+        </View>
       </View>
     );
   }
