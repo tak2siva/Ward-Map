@@ -15,16 +15,14 @@ import com.google.maps.android.data.kml.KmlLayer;
 import com.google.maps.android.data.kml.KmlPlacemark;
 import com.google.maps.android.data.kml.KmlPolygon;
 import com.wardmap.R;
-import com.wardmap.map.overlays.KMLOverlay;
 import com.wardmap.map.react.JSEventBus;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class GoogleMapViewManager extends SimpleViewManager<GMapView>
+public class GMapViewManager extends SimpleViewManager<GMapView>
         implements OnMapReadyCallback, LifecycleEventListener {
 
     private GMapView gMapView;

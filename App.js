@@ -15,18 +15,6 @@ import {
   DeviceEventEmitter
 } from 'react-native';
 
-const MapView = requireNativeComponent('OSMapView', {
-      name: 'OSMapView', 
-      propTypes: {
-        latitude: PropTypes.number,
-        longitude: PropTypes.number,
-        enableMarker: PropTypes.bool,
-        userLocation: PropTypes.object,
-        randomKey: PropTypes.number, // Hack to call java method with view instance
-        ...View.propTypes
-      }
-});
-
 const GoogleMapView = requireNativeComponent('GoogleMapView', {
       name: 'GoogleMapView', 
       propTypes: {
