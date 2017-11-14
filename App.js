@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Realm from 'realm';
+import DataMigration from './database/DataMigration'
+import {Schemas} from './database/schemas'
 import {
   Platform,
   Dimensions,
@@ -44,29 +46,6 @@ const MapView = requireNativeComponent('OSMapView', {
       }
 });
 
-const CsvImportSchema = {
-      name: 'CsvImport',
-      primaryKey: 'version',
-      properties: {
-        version: 'string',
-        imported: {type: 'bool', default: false}
-      }
-    }
-
-const WardInfoSchema = {
-  name: 'WardInfo',
-  primaryKey: 'wardNo',
-  properties: {
-    wardNo: 'int',
-    zoneNo: 'string',
-    zoneName: 'string',
-    zonalOfficeAddress: 'string',
-    zonalOfficerEmail: 'string',
-    zonalOfficerLandLine: 'string',
-    zonalOfficerMobile: 'string'
-  }
-}
-
 
 const options = {
   enableHighAccuracy: true,
@@ -108,7 +87,7 @@ export default class App extends Component<{}> {
     DeviceEventEmitter.addListener('ClickMarker',  function(e: Event) {
       let wardNo = e.split(" ")[1];
       let wards = null;
-      Realm.open({schema: [WardInfoSchema]})
+      Realm.open({schema: [Schemas.WardInfoSchema]})
         .then(realm => {
           wards = realm.objects('WardInfo').filtered('wardNo = '+ wardNo);
             that.setState({
@@ -118,6 +97,11 @@ export default class App extends Component<{}> {
       });      
     });
   }
+
+  componentWillMount() {
+    DataMigration.prototype.importCSVData();
+  }
+
 
   updateCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
@@ -141,53 +125,7 @@ export default class App extends Component<{}> {
     this.setState({randomKey: Math.random(),enableMarker: true});
   }
 
-  importCSVData() {
-    Realm.open({schema: [CsvImportSchema, WardInfoSchema]})
-      .then(realm => {
-        let meta = realm.objects('CsvImport').filtered('version = "v1"');
-        if (meta && meta['0'] && meta['0'].imported) {
-          console.log("================= Skipping Import ====================");
-          return;
-        }
-
-        const WardMapV1 = require('./react_assets/chennai_ward_map_v1.json');
-        console.log("============= Importing CSV ====================================")
-        for (let row of WardMapV1) {
-          try {
-            
-            console.log(row);
-            realm.write(() => {
-              realm.create('WardInfo', {
-                wardNo: Number.parseInt(row[0]), 
-                zoneNo: row[1], 
-                zoneName: row[2], 
-                zonalOfficeAddress: row[3], 
-                zonalOfficerEmail: row[4],
-                zonalOfficerLandLine: row[5],
-                zonalOfficerMobile: row[6]
-              });
-            });
-          } catch(e) {
-            console.log('error on importing csv');
-            console.log(e);
-          }
-        }
-        console.log("========= Import Success ============");
-        try {
-          realm.write(() => {
-            realm.create('CsvImport', {version: 'v1', imported: true});  
-          });
-        } catch(e) {
-          console.log('error on saving import log');
-          console.log(e);
-        }
-        
-      });
-  }
-
   render() {
-
-    this.importCSVData();
 
     var wardNo  = (this.state.wardInfo === undefined) ? 'No Ward info Available' : this.state.wardInfo[0].wardNo;
     var zoneName  = (this.state.wardInfo === undefined) ? 'No Zone info Available' : this.state.wardInfo[0].zoneName
