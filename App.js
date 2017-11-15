@@ -20,9 +20,6 @@ import {
 const GoogleMapView = requireNativeComponent('GoogleMapView', {
       name: 'GoogleMapView', 
       propTypes: {
-        latitude: PropTypes.number,
-        longitude: PropTypes.number,
-        enableMarker: PropTypes.bool,
         userLocation: PropTypes.object,
         randomKey: PropTypes.number, // Hack to call java method with view instance
         ...View.propTypes
@@ -42,7 +39,8 @@ class GeoPoint {
   }
 }
 
-const chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
+// const chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
+
 const Events = {
   MAP_LONG_PRESS_EVENT: 'MAP_LONG_PRESS_EVENT',
   ClickMarker: 'ClickMarker'
@@ -52,7 +50,7 @@ export default class App extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
-      userLocation: chennaiGeoPoint
+      userLocation: null
     }
 
     let that = this;
@@ -67,6 +65,12 @@ export default class App extends Component<{}> {
     });
 
     DeviceEventEmitter.addListener('ClickMarker',  function(e: Event) {
+      if (!e) {
+        console.log("Unable to find ward Info for click location");
+        that.setState({noResult: true});
+        return;
+      }
+
       let wardNo = e.split(" ")[1];
       let wards = null;
       Realm.open({schema: [Schemas.WardInfoSchema]})
@@ -74,7 +78,8 @@ export default class App extends Component<{}> {
           wards = realm.objects('WardInfo').filtered('wardNo = '+ wardNo);
             that.setState({
               marker_info: e,
-              wardInfo: wards
+              wardInfo: wards,
+              noResult: false
             });
       });      
     });
@@ -95,6 +100,7 @@ export default class App extends Component<{}> {
         console.log(new GeoPoint(position.coords.latitude, position.coords.longitude));
         this.setState({
           userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
+          randomKey: Math.random()
         });
       },
       (error) => {
@@ -107,7 +113,6 @@ export default class App extends Component<{}> {
 
   onClickLocate() {
     this.updateCurrentLocation();
-    this.setState({randomKey: Math.random(),enableMarker: true});
   }
 
   render() {
@@ -154,31 +159,16 @@ export default class App extends Component<{}> {
         </Modal>
 
 
-
-
         <GoogleMapView
+          userLocation={this.state.userLocation}
+          randomKey={this.state.randomKey}
           style={styles.mapView}
         />
         <View style={styles.small_ward_info_tile}>
-          <Text style={styles.wardInfoText}> Ward No : {wardNo} </Text>
-          <Text style={styles.wardInfoText}> Ward Name : {zoneName} </Text>
-        </View>
-
-        <View style={styles.more_info_holder}>
-          
-          <TouchableHighlight onPress={() => {
-          this.setModalVisible(true)
-          }}>
-            <Text style={{fontSize: 15}}>
-              More Info
-            </Text>
-          </TouchableHighlight>
-
-          <View style={styles.locateMe}>
-            <Button 
-            onPress={this.onClickLocate.bind(this)}
-            title='Locate Me'/>
-          </View>
+          <Text>{this.state.noResult ? 'No Result found for this location' : ''}</Text>  
+          <Text> Ward No : {wardNo} </Text>
+          <Text> Zone Name : {zoneName} </Text>
+          <Text> Zone Address : {zoneAddress} </Text>
         </View>
       </View>
     );
