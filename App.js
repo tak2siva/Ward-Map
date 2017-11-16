@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PopupDialog, { SlideAnimation } from 'react-native-popup-dialog';
 import PropTypes from 'prop-types';
 import Realm from 'realm';
 import DataMigration from './database/DataMigration'
@@ -11,7 +12,6 @@ import {
   Text,
   View,
   Button,
-  Modal,
   requireNativeComponent,
   TouchableHighlight,
   DeviceEventEmitter
@@ -31,6 +31,9 @@ const options = {
   timeout: 5000,
   maximumAge: 0
 };
+const slideAnimation = new SlideAnimation({
+  slideFrom: 'bottom',
+});
 
 class GeoPoint {
   constructor(latitude, longitude) {
@@ -50,7 +53,8 @@ export default class App extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
-      userLocation: null
+      userLocation: null,
+      isWardInfoClosed: true  
     }
 
     let that = this;
@@ -89,9 +93,6 @@ export default class App extends Component<{}> {
     DataMigration.prototype.importCSVData();
   }
 
-  setModalVisible(visible) {
-    this.setState({modalVisible: visible});
-  }
 
   updateCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
@@ -113,9 +114,24 @@ export default class App extends Component<{}> {
 
   onClickLocate() {
     this.updateCurrentLocation();
+    this.popupDialog.dismiss();
+    this.setState({isWardInfoClosed: true})
   }
-
+  toggleShow(){
+    this.setState({isWardInfoClosed: !this.state.isWardInfoClosed}, () => {
+      if(this.state.isWardInfoClosed){
+        this.popupDialog.dismiss();
+      }
+    });
+  }
+  disablePopUp(){
+    this.setState({isWardInfoClosed: true})
+  }
+      
   render() {
+    const slideAnimation = new SlideAnimation({
+      slideFrom: 'bottom',
+    });
 
     var wardNo  = (this.state.wardInfo === undefined) ? 'No Ward info Available' : this.state.wardInfo[0].wardNo;
     var zoneName  = (this.state.wardInfo === undefined) ? 'No Zone info Available' : this.state.wardInfo[0].zoneName
@@ -128,24 +144,22 @@ export default class App extends Component<{}> {
     return(
       <View style={styles.container}>
 
-        <Modal
-          animationType="slide"
-          transparent={false}
-          style={{marginTop:30}}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {alert("Modal has been closed.")}}
-          >
+      <GoogleMapView
+          userLocation={this.state.userLocation}
+          randomKey={this.state.randomKey}
+          style={styles.mapView}
+        />
 
-          <View style={styles.closeModal}>
-            <TouchableHighlight onPress={() => {
-              this.setModalVisible(!this.state.modalVisible)
-            }}>
-            <Text style={styles.close}>✕</Text>
-            </TouchableHighlight>
-          </View>
-
-         <View style={{marginTop: 50}}>
+        <PopupDialog
+          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+          dialogStyle={styles.modal}
+          onDismissed={() =>{
+            this.disablePopUp();
+          }}
+        
+        >
           <View>
+            <Text>{this.state.noResult ? 'No Result found for this location' : ''}</Text>  
             <Text style={styles.wardInfoText}>wardNo : {wardNo}</Text>
             <Text style={styles.wardInfoText}>zoneName : {zoneName}</Text>
             <Text style={styles.wardInfoText}>zoneNo : {zoneNo}</Text>
@@ -153,23 +167,31 @@ export default class App extends Component<{}> {
             <Text style={styles.wardInfoText}>zonalOfficerEmail : {zonalOfficerEmail}</Text>
             <Text style={styles.wardInfoText}>zonalOfficerLandLine : {zonalOfficerLandLine}</Text>
             <Text style={styles.wardInfoText}>zonalOfficerMobile: {zonalOfficerMobile}</Text>
-
           </View>
-         </View>
-        </Modal>
-
-
-        <GoogleMapView
-          userLocation={this.state.userLocation}
-          randomKey={this.state.randomKey}
-          style={styles.mapView}
-        />
-        <View style={styles.small_ward_info_tile}>
-          <Text>{this.state.noResult ? 'No Result found for this location' : ''}</Text>  
-          <Text> Ward No : {wardNo} </Text>
-          <Text> Zone Name : {zoneName} </Text>
-          <Text> Zone Address : {zoneAddress} </Text>
-        </View>
+        </PopupDialog>
+        
+              <View style={[styles.small_ward_info_tile, (this.state.isWardInfoClosed ? styles.block : styles.displayNone )]}
+                id='view1' >
+                <Text style={styles.wardInfoText}> Ward No : {wardNo} </Text>
+                <Text style={styles.wardInfoText}> Ward Name : {zoneName} </Text>
+              </View>
+       
+            <View style={styles.more_info_holder}>
+                <Text style={{fontSize: 15}}
+                  onPress={() => {
+                      this.popupDialog.show();
+                      this.toggleShow();
+                  }}>
+                  More Info
+                </Text>
+              <View style={styles.locateMe}>
+                <Button 
+                  onPress={this.onClickLocate.bind(this)}
+                  title='Locate Me'/>
+              </View>
+            </View>
+        
+        
       </View>
     );
   }

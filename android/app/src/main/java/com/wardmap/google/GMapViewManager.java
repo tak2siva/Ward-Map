@@ -19,6 +19,7 @@ import com.wardmap.map.react.JSEventBus;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class GMapViewManager extends SimpleViewManager<GMapView>
         implements OnMapReadyCallback, LifecycleEventListener {
@@ -71,6 +72,9 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
             String wardNo = kmlPlacemark1.getProperty("name");
             jsEventBus.sendEvent("ClickMarker", wardNo);
         } else {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("name", "Unknown");
+            resetMarker(latLng, new KmlPlacemark(null, null, null, map));
             jsEventBus.sendEvent("ClickMarker", null);
             System.out.println("KML Not found");
         }
@@ -91,6 +95,8 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         Marker locationMarker = gMapView.getGoogleMap().addMarker(markerOptions);
         locationMarker.showInfoWindow();
         gMapView.getMarkers().add(locationMarker);
+        gMapView.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng , 15.0f));
+
     }
 
     private KmlLayer createKmlLayer(GoogleMap googleMap) {
