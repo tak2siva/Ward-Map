@@ -11,9 +11,9 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
   Button,
   requireNativeComponent,
-  TouchableHighlight,
   DeviceEventEmitter
 } from 'react-native';
 
@@ -101,14 +101,16 @@ export default class App extends Component<{}> {
         console.log(new GeoPoint(position.coords.latitude, position.coords.longitude));
         this.setState({
           userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
-          randomKey: Math.random()
-        });
+        },()=>{
+          this.setState({randomKey: Math.random()
+
+        })});
       },
       (error) => {
         console.log("Error updating current location: ");
         console.log(error);
       },
-      {maximumAge: 0, timeout: 20000}
+      {maximumAge: 20000, enableHighAccuracy: true, timeout: 20000}
     );
   }
 
@@ -143,12 +145,11 @@ export default class App extends Component<{}> {
 
     return(
       <View style={styles.container}>
-
-      <GoogleMapView
-          userLocation={this.state.userLocation}
-          randomKey={this.state.randomKey}
-          style={styles.mapView}
-        />
+        <GoogleMapView
+            userLocation={this.state.userLocation}
+            randomKey={this.state.randomKey}
+            style={styles.mapView}
+          />
 
         <PopupDialog
           ref={(popupDialog) => { this.popupDialog = popupDialog; }}
@@ -158,6 +159,7 @@ export default class App extends Component<{}> {
           }}
         
         >
+        <ScrollView> 
           <View>
             <Text>{this.state.noResult ? 'No Result found for this location' : ''}</Text>  
             <Text style={styles.wardInfoText}>wardNo : {wardNo}</Text>
@@ -168,29 +170,29 @@ export default class App extends Component<{}> {
             <Text style={styles.wardInfoText}>zonalOfficerLandLine : {zonalOfficerLandLine}</Text>
             <Text style={styles.wardInfoText}>zonalOfficerMobile: {zonalOfficerMobile}</Text>
           </View>
+        </ScrollView>
         </PopupDialog>
         
-              <View style={[styles.small_ward_info_tile, (this.state.isWardInfoClosed ? styles.block : styles.displayNone )]}
-                id='view1' >
-                <Text style={styles.wardInfoText}> Ward No : {wardNo} </Text>
-                <Text style={styles.wardInfoText}> Ward Name : {zoneName} </Text>
-              </View>
-       
-            <View style={styles.more_info_holder}>
-                <Text style={{fontSize: 15}}
-                  onPress={() => {
-                      this.popupDialog.show();
-                      this.toggleShow();
-                  }}>
-                  More Info
-                </Text>
-              <View style={styles.locateMe}>
-                <Button 
-                  onPress={this.onClickLocate.bind(this)}
-                  title='Locate Me'/>
-              </View>
-            </View>
-        
+        <View style={[styles.small_ward_info_tile, (this.state.isWardInfoClosed ? styles.block : styles.displayNone )]}
+          id='view1' >
+          <Text style={styles.wardInfoText}> Ward No : {wardNo} </Text>
+          <Text style={styles.wardInfoText}> Ward Name : {zoneName} </Text>
+        </View>
+     
+        <View style={styles.more_info_holder}>
+          <Text style={styles.moreInfoText}
+            onPress={() => {
+                this.popupDialog.show();
+                this.toggleShow();
+            }}>
+            More Info
+          </Text>
+          <View style={styles.locateMe}>
+              <Button style={styles.locateMeBtn}
+                onPress={this.onClickLocate.bind(this)}
+                title='Locate Me'/>
+          </View>
+        </View>
         
       </View>
     );
