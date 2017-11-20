@@ -91,6 +91,7 @@ export default class App extends Component<{}> {
 
   componentWillMount() {
     DataMigration.prototype.importCSVData();
+    this.updateCurrentLocation();
   }
 
 

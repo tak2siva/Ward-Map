@@ -95,7 +95,13 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         Marker locationMarker = gMapView.getGoogleMap().addMarker(markerOptions);
         locationMarker.showInfoWindow();
         gMapView.getMarkers().add(locationMarker);
-        gMapView.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng , 15.0f));
+        GoogleMap map = gMapView.getGoogleMap();
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng , 17.0f));
+        map.getUiSettings().setZoomGesturesEnabled(false);
+        map.getUiSettings().setZoomControlsEnabled(false);
+        map.getUiSettings().setScrollGesturesEnabled(false);
+
+
 
     }
 
