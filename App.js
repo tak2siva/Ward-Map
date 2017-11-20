@@ -89,9 +89,24 @@ export default class App extends Component<{}> {
     });
   }
 
+  componentDidMount() {
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        this.setState({
+          userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
+        },()=>{
+          this.setState({randomKey: Math.random()
+
+        })});
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
+    );
+  }
+
   componentWillMount() {
     DataMigration.prototype.importCSVData();
-    this.updateCurrentLocation();
+    navigator.geolocation.clearWatch(this.watchId);
   }
 
 
@@ -111,7 +126,7 @@ export default class App extends Component<{}> {
         console.log("Error updating current location: ");
         console.log(error);
       },
-      {maximumAge: 20000, enableHighAccuracy: true, timeout: 20000}
+      {maximumAge: 0, enableHighAccuracy: true, timeout: 20000}
     );
   }
 
