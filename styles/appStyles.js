@@ -54,6 +54,7 @@ export default StyleSheet.create({
     position: 'absolute',
     width: '100%',
     bottom: 70,
+    paddingHorizontal: 7
   },
   more_info_holder: {
     borderTopColor: '#e7e7e7',

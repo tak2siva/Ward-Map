@@ -176,16 +176,16 @@ export default class App extends Component<{}> {
         
         >
         <ScrollView> 
-          <View>
-            <Text>{this.state.noResult ? 'No Result found for this location' : ''}</Text>  
-            <Text style={styles.wardInfoText}>wardNo : {wardNo}</Text>
-            <Text style={styles.wardInfoText}>zoneName : {zoneName}</Text>
-            <Text style={styles.wardInfoText}>zoneNo : {zoneNo}</Text>
-            <Text style={styles.wardInfoText}>zonalOfficeAddress : {zonalOfficeAddress}</Text>
-            <Text style={styles.wardInfoText}>zonalOfficerEmail : {zonalOfficerEmail}</Text>
-            <Text style={styles.wardInfoText}>zonalOfficerLandLine : {zonalOfficerLandLine}</Text>
-            <Text style={styles.wardInfoText}>zonalOfficerMobile: {zonalOfficerMobile}</Text>
-          </View>
+            <View>
+              <Text>{this.state.noResult ? 'No Result found for this location' : ''}</Text>
+              <Text style={styles.wardInfoText}>Ward No : { wardNo}</Text>
+              <Text style={styles.wardInfoText}>Zone Name : {zoneName}</Text>
+              <Text style={styles.wardInfoText}>Zone No : {zoneNo}</Text>
+              <Text style={styles.wardInfoText}>Zonal office adress : {zonalOfficeAddress}</Text>
+              <Text style={styles.wardInfoText}>Zonal officer email : {zonalOfficerEmail}</Text>
+              <Text style={styles.wardInfoText}>Zonal officer land line : {zonalOfficerLandLine}</Text>
+              <Text style={styles.wardInfoText}>Zonal officer mobile: {zonalOfficerMobile}</Text>
+            </View>
         </ScrollView>
         </PopupDialog>
         

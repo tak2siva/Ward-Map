@@ -49,8 +49,14 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
     public void onMapReady(final GoogleMap googleMap) {
         System.out.println("=============== Initialized google maps ===================");
         gMapView.setGoogleMap(googleMap);
+        getDeviceLocation();
+        System.out.println(mLastKnownLocation.getLatitude()+"device cuurent location latitude");
+        System.out.println(mLastKnownLocation.getLongitude()+"device cuurent location longitude");
         googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(13.082680, 80.270718) , 14.0f) );
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(false);
+        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+        googleMap.getUiSettings().setZoomGesturesEnabled(false);
+        googleMap.setMyLocationEnabled(true);
 
         final KmlLayer kmlLayer = createKmlLayer(googleMap);
         gMapView.setKmlLayer(kmlLayer);
