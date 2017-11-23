@@ -49,23 +49,14 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
     public void onMapReady(final GoogleMap googleMap) {
         System.out.println("=============== Initialized google maps ===================");
         gMapView.setGoogleMap(googleMap);
-        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(13.082680, 80.270718) , 14.0f) );
-        googleMap.getUiSettings().setZoomControlsEnabled(false);
-        googleMap.getUiSettings().setScrollGesturesEnabled(false);
-        googleMap.getUiSettings().setZoomGesturesEnabled(false);
+        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(13.082680, 80.270718) , 12.0f) );
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setScrollGesturesEnabled(true);
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
         googleMap.setMyLocationEnabled(true);
 
         final KmlLayer kmlLayer = createKmlLayer(googleMap);
         gMapView.setKmlLayer(kmlLayer);
-
-        GoogleMap.OnMapLongClickListener onMapLongClickListener = new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                findKmlPlaceMarkAndResetMarker(latLng);
-            }
-        };
-
-        googleMap.setOnMapLongClickListener(onMapLongClickListener);
     }
 
     private void findKmlPlaceMarkAndResetMarker(LatLng latLng) {
@@ -99,10 +90,10 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         locationMarker.showInfoWindow();
         gMapView.getMarkers().add(locationMarker);
         GoogleMap map = gMapView.getGoogleMap();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng , 17.0f));
-        map.getUiSettings().setZoomGesturesEnabled(false);
-        map.getUiSettings().setZoomControlsEnabled(false);
-        map.getUiSettings().setScrollGesturesEnabled(false);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng , 12.5f));
+        map.getUiSettings().setZoomGesturesEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
+        map.getUiSettings().setScrollGesturesEnabled(true);
 
 
 

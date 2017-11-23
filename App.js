@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import PopupDialog, { SlideAnimation } from 'react-native-popup-dialog';
 import PropTypes from 'prop-types';
 import Realm from 'realm';
-import DataMigration from './database/DataMigration'
-import {Schemas} from './database/schemas'
+import DataMigration from './database/DataMigration';
+import {Schemas} from './database/schemas';
 import styles from './styles/appStyles';
+import WardInfoTile from './components/wardInfoTile';
+import Wait from './components/wait';
 import {
   Platform,
   Dimensions,
@@ -26,14 +27,6 @@ const GoogleMapView = requireNativeComponent('GoogleMapView', {
       }
 });
 
-const options = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0
-};
-const slideAnimation = new SlideAnimation({
-  slideFrom: 'bottom',
-});
 
 class GeoPoint {
   constructor(latitude, longitude) {
@@ -45,8 +38,7 @@ class GeoPoint {
 // const chennaiGeoPoint = new GeoPoint(13.082680, 80.270718);
 
 const Events = {
-  MAP_LONG_PRESS_EVENT: 'MAP_LONG_PRESS_EVENT',
-  ClickMarker: 'ClickMarker'
+  ClickMarker: 'ClickMarker',
 }
  
 export default class App extends Component<{}> {
@@ -59,22 +51,12 @@ export default class App extends Component<{}> {
 
     let that = this;
 
-    DeviceEventEmitter.addListener('MAP_LONG_PRESS_EVENT',  function(e: Event) {
-      console.log(e);
-      that.setState({
-        randomKey: Math.random(),
-        enableMarker: true,
-        userLocation: new GeoPoint(e.latitude, e.longitude)
-      });
-    });
-
     DeviceEventEmitter.addListener('ClickMarker',  function(e: Event) {
       if (!e) {
         console.log("Unable to find ward Info for click location");
         that.setState({noResult: true});
         return;
       }
-
       let wardNo = e.split(" ")[1];
       let wards = null;
       Realm.open({schema: [Schemas.WardInfoSchema]})
@@ -87,6 +69,7 @@ export default class App extends Component<{}> {
             });
       });      
     });
+
   }
 
   componentDidMount() {
@@ -99,7 +82,9 @@ export default class App extends Component<{}> {
 
         })});
       },
-      (error) => this.setState({ error: error.message }),
+      (error) => {
+        console.log("Error updating current location: ");
+        console.log(error);},
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
     );
   }
@@ -114,7 +99,6 @@ export default class App extends Component<{}> {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log("========= GPS reading ================");
-        console.log(new GeoPoint(position.coords.latitude, position.coords.longitude));
         this.setState({
           userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
         },()=>{
@@ -129,35 +113,16 @@ export default class App extends Component<{}> {
       {maximumAge: 0, enableHighAccuracy: true, timeout: 20000}
     );
   }
-
-  onClickLocate() {
-    this.updateCurrentLocation();
-    this.popupDialog.dismiss();
-    this.setState({isWardInfoClosed: true})
-  }
-  toggleShow(){
-    this.setState({isWardInfoClosed: !this.state.isWardInfoClosed}, () => {
-      if(this.state.isWardInfoClosed){
-        this.popupDialog.dismiss();
-      }
-    });
-  }
-  disablePopUp(){
-    this.setState({isWardInfoClosed: true})
-  }
       
   render() {
-    const slideAnimation = new SlideAnimation({
-      slideFrom: 'bottom',
-    });
-
-    var wardNo  = (this.state.wardInfo === undefined) ? 'No Ward info Available' : this.state.wardInfo[0].wardNo;
-    var zoneName  = (this.state.wardInfo === undefined) ? 'No Zone info Available' : this.state.wardInfo[0].zoneName
-    var zoneNo = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zoneNo
-    var zonalOfficeAddress = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficeAddress
-    var zonalOfficerEmail = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficerEmail
-    var zonalOfficerLandLine = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficerLandLine
-    var zonalOfficerMobile = (this.state.wardInfo === undefined) ? 'No ZoneNo info Available' : this.state.wardInfo[0].zonalOfficerMobile
+    let wardInfo = null;
+    if (this.state.wardInfo === undefined || this.state.noResult){
+      wardInfo = <Wait textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {"No Information Found"} />;
+    }else{
+      wardInfo = <WardInfoTile content={this.state.wardInfo}
+              textStyle={styles.wardInfoText}
+              viewStyle={styles.ward_info_tile} />;
+    }
 
     return(
       <View style={styles.container}>
@@ -166,50 +131,11 @@ export default class App extends Component<{}> {
             randomKey={this.state.randomKey}
             style={styles.mapView}
           />
-
-        <PopupDialog
-          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
-          dialogStyle={styles.modal}
-          onDismissed={() =>{
-            this.disablePopUp();
-          }}
-        
-        >
-        <ScrollView> 
-            <View>
-              <Text>{this.state.noResult ? 'No Result found for this location' : ''}</Text>
-              <Text style={styles.wardInfoText}>Ward No : { wardNo}</Text>
-              <Text style={styles.wardInfoText}>Zone Name : {zoneName}</Text>
-              <Text style={styles.wardInfoText}>Zone No : {zoneNo}</Text>
-              <Text style={styles.wardInfoText}>Zonal office adress : {zonalOfficeAddress}</Text>
-              <Text style={styles.wardInfoText}>Zonal officer email : {zonalOfficerEmail}</Text>
-              <Text style={styles.wardInfoText}>Zonal officer land line : {zonalOfficerLandLine}</Text>
-              <Text style={styles.wardInfoText}>Zonal officer mobile: {zonalOfficerMobile}</Text>
-            </View>
-        </ScrollView>
-        </PopupDialog>
-        
-        <View style={[styles.small_ward_info_tile, (this.state.isWardInfoClosed ? styles.block : styles.displayNone )]}
-          id='view1' >
-          <Text style={styles.wardInfoText}> Ward No : {wardNo} </Text>
-          <Text style={styles.wardInfoText}> Ward Name : {zoneName} </Text>
+        <View>
+          <ScrollView>
+            {wardInfo}
+          </ScrollView>
         </View>
-     
-        <View style={styles.more_info_holder}>
-          <Text style={styles.moreInfoText}
-            onPress={() => {
-                this.popupDialog.show();
-                this.toggleShow();
-            }}>
-            More Info
-          </Text>
-          <View style={styles.locateMe}>
-              <Button style={styles.locateMeBtn}
-                onPress={this.onClickLocate.bind(this)}
-                title='Locate Me'/>
-          </View>
-        </View>
-        
       </View>
     );
   }
