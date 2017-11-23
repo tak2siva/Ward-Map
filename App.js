@@ -85,7 +85,7 @@ export default class App extends Component<{}> {
       (error) => {
         console.log("Error updating current location: ");
         console.log(error);},
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
+      { enableHighAccuracy: true, timeout: 0, maximumAge: 1000, distanceFilter: 10 },
     );
   }
 
@@ -94,25 +94,6 @@ export default class App extends Component<{}> {
     navigator.geolocation.clearWatch(this.watchId);
   }
 
-
-  updateCurrentLocation() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log("========= GPS reading ================");
-        this.setState({
-          userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
-        },()=>{
-          this.setState({randomKey: Math.random()
-
-        })});
-      },
-      (error) => {
-        console.log("Error updating current location: ");
-        console.log(error);
-      },
-      {maximumAge: 0, enableHighAccuracy: true, timeout: 20000}
-    );
-  }
       
   render() {
     let wardInfo = null;
