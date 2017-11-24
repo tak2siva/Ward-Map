@@ -10,8 +10,9 @@
     "react": "16.0.0",
     "react-native": "0.50.1",
     "react-native-maps": "0.17.1",
-    "react-native-splash-screen": "^3.0.6",
-    "realm": "2.0.6"
+    "react-native-popup-dialog": "^0.9.39",
+    "realm": "2.0.6",
+    "render-if": "^0.1.1"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",

@@ -143,7 +143,6 @@ repositories {
 
 
 dependencies {
-    compile project(':react-native-splash-screen')
     compile project(':realm')
     compile project(':react-native-maps')
     compile fileTree(dir: "libs", include: ["*.jar"])
