@@ -17,6 +17,7 @@ import {
   requireNativeComponent,
   DeviceEventEmitter
 } from 'react-native';
+import SplashScreen from 'react-native-splash-screen'
 
 const GoogleMapView = requireNativeComponent('GoogleMapView', {
       name: 'GoogleMapView', 
@@ -73,6 +74,7 @@ export default class App extends Component<{}> {
   }
 
   componentDidMount() {
+    SplashScreen.hide();
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         this.setState({
@@ -85,7 +87,7 @@ export default class App extends Component<{}> {
       (error) => {
         console.log("Error updating current location: ");
         console.log(error);},
-      { enableHighAccuracy: true, timeout: 0, maximumAge: 1000, distanceFilter: 10 },
+      { enableHighAccuracy: false, timeout: 0, maximumAge: 1000, distanceFilter: 10 },
     );
   }
 
