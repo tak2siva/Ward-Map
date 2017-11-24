@@ -40,7 +40,7 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         this.reactContext = reactContext;
         gMapView.getMapAsync(this);
         gMapView.onCreate(null);
-
+        jsEventBus.sendEvent("mapLoaded", true);
         reactContext.addLifecycleEventListener(this);
         return gMapView;
     }

@@ -27,4 +27,9 @@ public class JSEventBus {
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
     }
+    public void sendEvent(String eventName, @Nullable boolean params) {
+        this.reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
+    }
 }

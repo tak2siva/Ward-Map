@@ -39,6 +39,7 @@ class GeoPoint {
 
 const Events = {
   ClickMarker: 'ClickMarker',
+  mapLoaded: 'mapLoaded'
 }
  
 export default class App extends Component<{}> {
@@ -50,6 +51,30 @@ export default class App extends Component<{}> {
     }
 
     let that = this;
+
+    DeviceEventEmitter.addListener('mapLoaded',  function(e: Event) {
+      if (!e) {
+        console.log("Unable to find ward Info for click location");
+        that.setState({noResult: true});
+        return;
+      }
+    
+      navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log("=====================",new GeoPoint(position.coords.latitude, position.coords.longitude));
+        that.setState({
+          userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
+        },()=>{
+          that.setState({randomKey: Math.random()
+
+        })});
+      },
+      (error) => {
+        console.log("Error updating current location: ");
+        console.log(error);},
+      { enableHighAccuracy: true, timeout: 0, maximumAge: 10000, distanceFilter: 10 },
+      );
+    });
 
     DeviceEventEmitter.addListener('ClickMarker',  function(e: Event) {
       if (!e) {
@@ -85,7 +110,7 @@ export default class App extends Component<{}> {
       (error) => {
         console.log("Error updating current location: ");
         console.log(error);},
-      { enableHighAccuracy: true, timeout: 0, maximumAge: 1000, distanceFilter: 10 },
+      { enableHighAccuracy: true, timeout: 0, maximumAge: 10000, distanceFilter: 10 },
     );
   }
 
