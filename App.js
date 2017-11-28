@@ -5,7 +5,7 @@ import DataMigration from './database/DataMigration';
 import {Schemas} from './database/schemas';
 import styles from './styles/appStyles';
 import WardInfoTile from './components/wardInfoTile';
-import Wait from './components/wait';
+import Notice from './components/notice';
 import {
   Platform,
   Dimensions,
@@ -47,7 +47,7 @@ export default class App extends Component<{}> {
     super(props);
     this.state = {
       userLocation: null,
-      isWardInfoClosed: true  
+      noResult: false 
     }
 
     let that = this;
@@ -72,7 +72,7 @@ export default class App extends Component<{}> {
       (error) => {
         console.log("Error updating current location: ");
         console.log(error);},
-      { enableHighAccuracy: true, timeout: 0, maximumAge: 10000, distanceFilter: 10 },
+      { enableHighAccuracy: true, timeout: 0, maximumAge: 20000, distanceFilter: 10 },
       );
     });
 
@@ -110,7 +110,7 @@ export default class App extends Component<{}> {
       (error) => {
         console.log("Error updating current location: ");
         console.log(error);},
-      { enableHighAccuracy: true, timeout: 0, maximumAge: 10000, distanceFilter: 10 },
+      { enableHighAccuracy: true, timeout: 0, maximumAge: 20000, distanceFilter: 10 },
     );
   }
 
@@ -123,7 +123,12 @@ export default class App extends Component<{}> {
   render() {
     let wardInfo = null;
     if (this.state.wardInfo === undefined || this.state.noResult){
-      wardInfo = <Wait textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {"No Information Found"} />;
+      if (this.state.userLocation === null) {
+        wardInfo = <Notice textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {{"info":"Make sure app location permision is enabled","status":"Trying to fetch your location..."}} />; 
+      }
+      else{
+        wardInfo = <Notice textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {{"info":"Sorry","status":"No Information Found for your Location"}} />;  
+      } 
     }else{
       wardInfo = <WardInfoTile content={this.state.wardInfo}
               textStyle={styles.wardInfoText}

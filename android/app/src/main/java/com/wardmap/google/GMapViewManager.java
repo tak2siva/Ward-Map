@@ -49,7 +49,7 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
     public void onMapReady(final GoogleMap googleMap) {
         System.out.println("=============== Initialized google maps ===================");
         gMapView.setGoogleMap(googleMap);
-        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(13.082680, 80.270718) , 12.0f) );
+        googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(13.082680, 80.270718) , 12.5f) );
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setScrollGesturesEnabled(true);
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
@@ -80,7 +80,6 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         }
         gMapView.getMarkers().clear();
 
-        System.out.println("Clicked " + kmlPlacemark.getProperty("name"));
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
                 .title(kmlPlacemark.getProperty("name"))

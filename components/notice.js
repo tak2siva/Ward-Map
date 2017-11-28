@@ -4,7 +4,7 @@ import {Text,View} from 'react-native';
 
 class Wait extends React.Component{
 	static propTypes = {
-		content : PropTypes.string.isRequired,
+		content : PropTypes.object.isRequired,
 		textStyle : PropTypes.oneOfType([
       		PropTypes.array,
       		PropTypes.number,
@@ -21,8 +21,8 @@ class Wait extends React.Component{
 		const {content,textStyle,viewStyle} = this.props;
 		return (
 			<View style={viewStyle}>
-				<Text style={textStyle}>Tried to fetch information.</Text>
-				<Text style={textStyle}> {content} </Text>
+				<Text style={[textStyle,{textAlign: "center"}]}>{content.info}</Text>
+				<Text style={[textStyle,{textAlign: "center"}]}> {content.status} </Text>
 	       	</View>
 		);
 	}
