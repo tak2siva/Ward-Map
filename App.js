@@ -6,6 +6,7 @@ import {Schemas} from './database/schemas';
 import styles from './styles/appStyles';
 import WardInfoTile from './components/wardInfoTile';
 import Notice from './components/notice';
+import WaitSpinner from './components/waitSpinner';
 import {
   Platform,
   Dimensions,
@@ -124,7 +125,7 @@ export default class App extends Component<{}> {
     let wardInfo = null;
     if (this.state.wardInfo === undefined || this.state.noResult){
       if (this.state.userLocation === null) {
-        wardInfo = <Notice textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {{"info":"Make sure app location permision is enabled","status":"Trying to fetch your location..."}} />; 
+        wardInfo = <WaitSpinner/>;
       }
       else{
         wardInfo = <Notice textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {{"info":"Sorry","status":"No Information Found for your Location"}} />;  
