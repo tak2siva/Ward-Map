@@ -123,31 +123,30 @@ export default class App extends Component<{}> {
       
   render() {
     let wardInfo = null;
+    let spinner = null;
+    let map = <GoogleMapView
+            userLocation={this.state.userLocation}
+            randomKey={this.state.randomKey}
+            style={styles.mapView}
+          />;
+   
     if (this.state.wardInfo === undefined || this.state.noResult){
       if (this.state.userLocation === null) {
-        wardInfo = <WaitSpinner/>;
+        spinner = <WaitSpinner/>;
       }
       else{
+        // wardInfo = 
         wardInfo = <Notice textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {{"info":"Sorry","status":"No Information Found for your Location"}} />;  
       } 
     }else{
-      wardInfo = <WardInfoTile content={this.state.wardInfo}
-              textStyle={styles.wardInfoText}
-              viewStyle={styles.ward_info_tile} />;
+      wardInfo = <WardInfoTile content={this.state.wardInfo}/>;
     }
 
     return(
       <View style={styles.container}>
-        <GoogleMapView
-            userLocation={this.state.userLocation}
-            randomKey={this.state.randomKey}
-            style={styles.mapView}
-          />
-        <View>
-          <ScrollView>
-            {wardInfo}
-          </ScrollView>
-        </View>
+        {this.state.userLocation === null && <View>{spinner}</View>}
+        {map}
+        {wardInfo}
       </View>
     );
   }

@@ -9,31 +9,20 @@ export default StyleSheet.create({
     bottom: 0,
     justifyContent: 'flex-start',
     alignItems: 'center',
+    backgroundColor: 'white'
   },
   imageBox: {
     height: 200,
     width: '100%',
   },
   mapView: {
-    height: '50%',
+    height: '20%',
     width: '100%',
   },
   buttonContainer: {
     flexDirection: 'row',
     marginVertical: 20,
     backgroundColor: 'transparent',
-  },
-  ward_info_tile :{
-    width: '100%',
-    paddingHorizontal: 15,
-    backgroundColor: 'white',
-    paddingLeft: 10,
-  },
-  wardInfoText: {
-    paddingVertical: 7,
-    paddingHorizontal: 5,
-    fontSize: 18
-
   },
   noInfoWaitText: {
     paddingVertical: 15,
@@ -45,5 +34,11 @@ export default StyleSheet.create({
   noInfoWaitView: {
     justifyContent: 'flex-start',
     alignItems: 'center',
+  },
+  headerText: {
+    color: '#A9A9A9',
+    fontSize: 20,
+    fontWeight: 'bold'
   }
+
 });

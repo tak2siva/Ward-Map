@@ -40,7 +40,7 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         this.reactContext = reactContext;
         gMapView.getMapAsync(this);
         gMapView.onCreate(null);
-        jsEventBus.sendEvent("mapLoaded", true);
+//        jsEventBus.sendEvent("mapLoaded", true);
         reactContext.addLifecycleEventListener(this);
         return gMapView;
     }
@@ -136,7 +136,13 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
             double longitude = map.getDouble("longitude");
             LatLng latLng = new LatLng(latitude, longitude);
             gMapView.setUserLocation(latLng);
-            findKmlPlaceMarkAndResetMarker(latLng);
+            if (!(gMapView.getUserLocation() == null)) {
+                if (latLng.equals(gMapView.getUserLocation())){
+                    findKmlPlaceMarkAndResetMarker(latLng);
+                }
+            }
+
+
         } catch (Exception e) {
             throw new RuntimeException("Error updating user location", e);
         }
