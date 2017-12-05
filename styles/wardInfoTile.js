@@ -24,8 +24,8 @@ export default StyleSheet.create({
       	fontFamily: 'sans-serif-thin'
     },
     flexRow: {
-		flex: 1, 
-		flexDirection: 'row'
+  		flex: 1, 
+  		flexDirection: 'row'
     },
    	smallBox: {
    		flex: 1,
@@ -42,7 +42,7 @@ export default StyleSheet.create({
     	fontFamily: 'notoserif',
     	color: 'white'
     },
-    bigBox: {
-
-    }
+    join_whatsappView: {
+    	marginTop: 30
+    },
 });
