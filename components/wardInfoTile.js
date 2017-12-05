@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Text,View,ScrollView,Image,TouchableHighlight} from 'react-native';
+import {Text,View,ScrollView,Image,TouchableHighlight,Linking} from 'react-native';
 import styles from '../styles/wardInfoTile';
 import RomanToDec from '../utils/romanToDec';
 
 class WardInfoTile extends React.Component {
-
-	joinWhatsapp(){
-		alert("joined");
+	joinWhatsapp(groupInviteLink){
+		Linking.openURL(groupInviteLink).catch(err => alert('No group available'));
 	}
 
 	render = () =>{
@@ -21,7 +20,7 @@ class WardInfoTile extends React.Component {
 					</View>
 
 					<View style={styles.flexRow}>
-						<View style={[{flex: 4},styles.bigBox]}>
+						<View style={{flex: 4}}>
 				       		<Text style={[styles.wardInfoText]}>ZONAL OFFICE ADDRESS : {content[0].zonalOfficeAddress.toUpperCase()}</Text>
 				       	</View>
 				       	<View style={styles.smallBox}>
@@ -52,18 +51,18 @@ class WardInfoTile extends React.Component {
 					    </View>
 			   		 }
 
-			   		 <View style={styles.join_whatsappView}>
+			   		 {content[0].wardWhatsappGroup !== undefined && <View style={styles.join_whatsappView}>
 				   		<TouchableHighlight
 					         style={styles.button}
-					         onPress={this.joinWhatsapp}
-					         underlayColor={'white'}
+					         onPress={()=> {this.joinWhatsapp(content[0].wardWhatsappGroup)}}
+					         underlayColor={'#ededed'}
 					        >
 					         <Image
-								style={[{width: '100%', height: 66,resizeMode: 'contain'},styles.join_whatsapp]}
+								style={[{width: '100%', height: 66,resizeMode: 'contain'}]}
 			          			source={require('../react_assets/images/whatsapp.png')}
 			        		/>
 					    </TouchableHighlight>
-			   		 </View>
+			   		 </View>}
 
 
 			    </View>
