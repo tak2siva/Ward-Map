@@ -7,6 +7,7 @@ import styles from './styles/appStyles';
 import WardInfoTile from './components/wardInfoTile';
 import Notice from './components/notice';
 import WaitSpinner from './components/waitSpinner';
+import SplashScreen from 'react-native-splash-screen';
 import {
   Platform,
   Dimensions,
@@ -99,6 +100,7 @@ export default class App extends Component<{}> {
   }
 
   componentDidMount() {
+    SplashScreen.hide();
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         this.setState({
