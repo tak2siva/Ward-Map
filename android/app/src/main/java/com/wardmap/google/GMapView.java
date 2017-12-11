@@ -17,6 +17,7 @@ import com.google.maps.android.data.kml.KmlPlacemark;
 import com.google.maps.android.data.kml.KmlPolygon;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GMapView extends MapView {
@@ -84,6 +85,6 @@ public class GMapView extends MapView {
             }
         }
 
-        return null;
+        return new KmlPlacemark(null, null, null, new HashMap<String, String>());
     }
 }

@@ -62,15 +62,19 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
     private void findKmlPlaceMarkAndResetMarker(LatLng latLng) {
         KmlPlacemark kmlPlacemark1 = gMapView.containsInAnyPolygon(latLng);
         if (kmlPlacemark1 != null) {
-            resetMarker(latLng, kmlPlacemark1);
-            String wardNo = kmlPlacemark1.getProperty("name");
-            jsEventBus.sendEvent("ClickMarker", wardNo);
+            if (kmlPlacemark1.getGeometry() != null) {
+                resetMarker(latLng, kmlPlacemark1);
+                String wardNo = kmlPlacemark1.getProperty("name");
+                jsEventBus.sendEvent("ClickMarker", wardNo);
+            } else {//handling location not inside polygon
+                HashMap<String, String> map = new HashMap<>();
+                map.put("name", "Unknown");
+                resetMarker(latLng, new KmlPlacemark(null, null, null, map));
+                jsEventBus.sendEvent("ClickMarker", null);
+                System.out.println("KML Not found");
+            }
         } else {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("name", "Unknown");
-            resetMarker(latLng, new KmlPlacemark(null, null, null, map));
-            jsEventBus.sendEvent("ClickMarker", null);
-            System.out.println("KML Not found");
+            System.out.println("=============map not loaded with kml layers=====");
         }
     }
 
@@ -89,11 +93,10 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         locationMarker.showInfoWindow();
         gMapView.getMarkers().add(locationMarker);
         GoogleMap map = gMapView.getGoogleMap();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng , 12.5f));
-        map.getUiSettings().setZoomGesturesEnabled(true);
-        map.getUiSettings().setZoomControlsEnabled(true);
-        map.getUiSettings().setScrollGesturesEnabled(true);
-
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.5f));
+        map.getUiSettings().setZoomGesturesEnabled(false);
+        map.getUiSettings().setZoomControlsEnabled(false);
+        map.getUiSettings().setScrollGesturesEnabled(false);
 
 
     }
@@ -135,14 +138,7 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
             double latitude = map.getDouble("latitude");
             double longitude = map.getDouble("longitude");
             LatLng latLng = new LatLng(latitude, longitude);
-            gMapView.setUserLocation(latLng);
-            if (!(gMapView.getUserLocation() == null)) {
-                if (latLng.equals(gMapView.getUserLocation())){
-                    findKmlPlaceMarkAndResetMarker(latLng);
-                }
-            }
-
-
+            findKmlPlaceMarkAndResetMarker(latLng);
         } catch (Exception e) {
             throw new RuntimeException("Error updating user location", e);
         }

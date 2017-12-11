@@ -53,30 +53,6 @@ export default class App extends Component<{}> {
 
     let that = this;
 
-    DeviceEventEmitter.addListener('mapLoaded',  function(e: Event) {
-      if (!e) {
-        console.log("Unable to find ward Info for click location");
-        that.setState({noResult: true});
-        return;
-      }
-    
-      navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log("=====================",new GeoPoint(position.coords.latitude, position.coords.longitude));
-        that.setState({
-          userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
-        },()=>{
-          that.setState({randomKey: Math.random()
-
-        })});
-      },
-      (error) => {
-        console.log("Error updating current location: ");
-        console.log(error);},
-      { enableHighAccuracy: true, timeout: 0, maximumAge: 20000, distanceFilter: 10 },
-      );
-    });
-
     DeviceEventEmitter.addListener('ClickMarker',  function(e: Event) {
       if (!e) {
         console.log("Unable to find ward Info for click location");
@@ -103,10 +79,7 @@ export default class App extends Component<{}> {
       (position) => {
         this.setState({
           userLocation: new GeoPoint(position.coords.latitude, position.coords.longitude),
-        },()=>{
-          this.setState({randomKey: Math.random()
-
-        })});
+        });
       },
       (error) => {
         console.log("Error updating current location: ");
@@ -135,7 +108,6 @@ export default class App extends Component<{}> {
         spinner = <WaitSpinner/>;
       }
       else{
-        // wardInfo = 
         wardInfo = <Notice textStyle={styles.noInfoWaitText} viewStyle={styles.noInfoWaitView} content = {{"info":"Sorry","status":"No Information Found for your Location"}} />;  
       } 
     }else{
