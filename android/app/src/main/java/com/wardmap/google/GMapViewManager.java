@@ -27,6 +27,7 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
     private GMapView gMapView;
     private ThemedReactContext reactContext;
     private JSEventBus jsEventBus;
+    private LatLng userLocation;
 
     @Override
     public String getName() {
@@ -56,17 +57,26 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         googleMap.setMyLocationEnabled(true);
 
         final KmlLayer kmlLayer = createKmlLayer(googleMap);
+        System.out.println("kml layer build============================");
+        jsEventBus.sendEvent("mapLoaded", true);
         gMapView.setKmlLayer(kmlLayer);
+        if (this.userLocation instanceof LatLng){
+            System.out.println("using saved location=================");
+            findKmlPlaceMarkAndResetMarker(this.userLocation);
+        }
     }
 
     private void findKmlPlaceMarkAndResetMarker(LatLng latLng) {
+        System.out.println("=============in find and reset marker=================="+latLng);
         KmlPlacemark kmlPlacemark1 = gMapView.containsInAnyPolygon(latLng);
         if (kmlPlacemark1 != null) {
             if (kmlPlacemark1.getGeometry() != null) {
+                System.out.println("=============kml layer good==================");
                 resetMarker(latLng, kmlPlacemark1);
                 String wardNo = kmlPlacemark1.getProperty("name");
                 jsEventBus.sendEvent("ClickMarker", wardNo);
             } else {//handling location not inside polygon
+                System.out.println("=============handling location not inside polygon==================");
                 HashMap<String, String> map = new HashMap<>();
                 map.put("name", "Unknown");
                 resetMarker(latLng, new KmlPlacemark(null, null, null, map));
@@ -75,10 +85,12 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
             }
         } else {
             System.out.println("=============map not loaded with kml layers=====");
+            return;
         }
     }
 
     private void resetMarker(LatLng latLng, KmlPlacemark kmlPlacemark) {
+        System.out.println("===========marker resetting====================");
         for (Marker m : gMapView.getMarkers()) {
             m.remove();
         }
@@ -138,18 +150,10 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
             double latitude = map.getDouble("latitude");
             double longitude = map.getDouble("longitude");
             LatLng latLng = new LatLng(latitude, longitude);
+            this.userLocation = latLng;
             findKmlPlaceMarkAndResetMarker(latLng);
         } catch (Exception e) {
             throw new RuntimeException("Error updating user location", e);
         }
-    }
-
-    @ReactProp(name = "randomKey")
-    public void setRandomKey(GMapView gMapView, double value) {
-        System.out.println("========== called set random==============");
-        if (gMapView == null || gMapView.getUserLocation() == null) {
-            return;
-        }
-        findKmlPlaceMarkAndResetMarker(gMapView.getUserLocation());
     }
 }
