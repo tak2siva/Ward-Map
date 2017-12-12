@@ -12,7 +12,8 @@
     "react-native-maps": "0.17.1",
     "react-native-popup-dialog": "^0.9.39",
     "realm": "2.0.6",
-    "render-if": "^0.1.1"
+    "render-if": "^0.1.1",
+    "rn-splash-screen": "^5.2.0"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",

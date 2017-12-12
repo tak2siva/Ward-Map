@@ -7,6 +7,7 @@ import styles from './styles/appStyles';
 import WardInfoTile from './components/wardInfoTile';
 import Notice from './components/notice';
 import WaitSpinner from './components/waitSpinner';
+import SplashScreen from "rn-splash-screen";
 import {
   Platform,
   Dimensions,
@@ -49,6 +50,7 @@ export default class App extends Component<{}> {
     this.state = {
       userLocation: null,
       noResult: false 
+      noResult: false ,
     }
 
     let that = this;
@@ -91,6 +93,9 @@ export default class App extends Component<{}> {
   componentWillMount() {
     DataMigration.prototype.importCSVData();
     navigator.geolocation.clearWatch(this.watchId);
+    global.setTimeout(() => {
+      SplashScreen.hide();
+    }, 1000);
   }
 
       

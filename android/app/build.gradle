@@ -155,6 +155,7 @@ repositories {
 
 
 dependencies {
+    compile project(':rn-splash-screen')
     compile project(':realm')
     compile 'com.facebook.fresco:fresco:1.5.0'
     compile 'com.facebook.fresco:animated-gif:1.5.0'
