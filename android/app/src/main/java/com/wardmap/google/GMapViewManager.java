@@ -41,14 +41,12 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         this.reactContext = reactContext;
         gMapView.getMapAsync(this);
         gMapView.onCreate(null);
-//        jsEventBus.sendEvent("mapLoaded", true);
         reactContext.addLifecycleEventListener(this);
         return gMapView;
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        System.out.println("=============== Initialized google maps ===================");
         gMapView.setGoogleMap(googleMap);
         googleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(13.082680, 80.270718) , 12.5f) );
         googleMap.getUiSettings().setZoomControlsEnabled(true);
@@ -57,40 +55,40 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
         googleMap.setMyLocationEnabled(true);
 
         final KmlLayer kmlLayer = createKmlLayer(googleMap);
-        System.out.println("kml layer build============================");
         jsEventBus.sendEvent("mapLoaded", true);
         gMapView.setKmlLayer(kmlLayer);
         if (this.userLocation instanceof LatLng){
-            System.out.println("using saved location=================");
             findKmlPlaceMarkAndResetMarker(this.userLocation);
         }
+
+        googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    jsEventBus.sendEvent("MyLocationClicked", true);
+                    return true;
+                }
+        });
+
     }
 
     private void findKmlPlaceMarkAndResetMarker(LatLng latLng) {
-        System.out.println("=============in find and reset marker=================="+latLng);
         KmlPlacemark kmlPlacemark1 = gMapView.containsInAnyPolygon(latLng);
         if (kmlPlacemark1 != null) {
             if (kmlPlacemark1.getGeometry() != null) {
-                System.out.println("=============kml layer good==================");
                 resetMarker(latLng, kmlPlacemark1);
                 String wardNo = kmlPlacemark1.getProperty("name");
                 jsEventBus.sendEvent("ClickMarker", wardNo);
             } else {//handling location not inside polygon
-                System.out.println("=============handling location not inside polygon==================");
                 HashMap<String, String> map = new HashMap<>();
                 map.put("name", "Unknown");
                 resetMarker(latLng, new KmlPlacemark(null, null, null, map));
                 jsEventBus.sendEvent("ClickMarker", null);
                 System.out.println("KML Not found");
             }
-        } else {
-            System.out.println("=============map not loaded with kml layers=====");
-            return;
         }
     }
 
     private void resetMarker(LatLng latLng, KmlPlacemark kmlPlacemark) {
-        System.out.println("===========marker resetting====================");
         for (Marker m : gMapView.getMarkers()) {
             m.remove();
         }
@@ -102,10 +100,10 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
                 .snippet(kmlPlacemark.getProperty("ZONE_NAME"));
 
         Marker locationMarker = gMapView.getGoogleMap().addMarker(markerOptions);
-        locationMarker.showInfoWindow();
+//        locationMarker.showInfoWindow();
         gMapView.getMarkers().add(locationMarker);
         GoogleMap map = gMapView.getGoogleMap();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.5f));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.5f));
         map.getUiSettings().setZoomGesturesEnabled(false);
         map.getUiSettings().setZoomControlsEnabled(false);
         map.getUiSettings().setScrollGesturesEnabled(false);
@@ -141,7 +139,6 @@ public class GMapViewManager extends SimpleViewManager<GMapView>
 
     @ReactProp(name = "userLocation")
     public void setMarkerToMyLocation(GMapView gMapView, ReadableMap map) {
-        System.out.println("==========set user location==============");
         if (map == null || gMapView == null) {
             return;
         }
